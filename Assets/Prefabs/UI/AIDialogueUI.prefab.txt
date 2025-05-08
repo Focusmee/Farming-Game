@@ -1,0 +1,64 @@
+# AI对话UI界面设置指南
+
+## 1. 创建AI对话UI界面
+
+1. 在Unity编辑器中，右键点击Hierarchy窗口，选择UI > Canvas，创建一个新的Canvas。
+2. 将Canvas命名为"AIDialogueCanvas"。
+3. 确保Canvas的"Render Mode"设置为"Screen Space - Overlay"。
+4. 添加"Canvas Scaler"组件，设置为"Scale With Screen Size"，参考分辨率设为1920x1080。
+
+## 2. 创建输入面板
+
+1. 在AIDialogueCanvas下创建一个Panel，命名为"InputPanel"。
+2. 将Panel设置为适合游戏的尺寸（例如宽度600，高度200）。
+3. 将Panel放置在屏幕底部中央位置。
+4. 在Panel内添加：
+   - 一个TextMeshPro InputField用于玩家输入文本
+   - 一个提交按钮（Button）
+   - 一个取消按钮（Button）
+   - 一个标题文本（可选，如"与NPC对话"）
+
+## 3. 创建继续/结束对话面板
+
+1. 在AIDialogueCanvas下创建另一个Panel，命名为"ContinuePanel"。
+2. 设置合适的尺寸和位置（例如宽度400，高度150，位于屏幕中央）。
+3. 在Panel内添加：
+   - 一个询问文本（如"继续对话？"）
+   - 一个"继续"按钮
+   - 一个"结束"按钮
+
+## 4. 创建设置面板
+
+1. 在AIDialogueCanvas下创建第三个Panel，命名为"SettingsPanel"。
+2. 设置合适的尺寸和位置（例如宽度500，高度300，位于屏幕中央）。
+3. 在Panel内添加：
+   - 一个标题文本（如"AI设置"）
+   - 一个Text标签（如"DeepSeek API密钥："）
+   - 一个TextMeshPro InputField用于输入API密钥
+   - 一个保存按钮
+   - 一个关闭按钮
+
+## 5. 添加设置按钮
+
+1. 在AIDialogueCanvas下创建一个Button，命名为"OpenSettingsButton"。
+2. 设置为小尺寸并放置在屏幕的一角（如右上角）。
+3. 设置适当的图标（如齿轮图标）。
+
+## 6. 添加AIDialogueUI组件
+
+1. 在AIDialogueCanvas上添加"AIDialogueUI"脚本组件。
+2. 将输入面板的引用拖拽到对应字段。
+3. 将输入字段、提交按钮和取消按钮的引用拖拽到对应字段。
+4. 将继续面板、继续按钮和结束按钮的引用拖拽到对应字段。
+5. 将设置面板、API密钥输入字段、保存按钮、关闭按钮和打开设置按钮的引用拖拽到对应字段。
+
+## 7. 将Canvas转换为Prefab
+
+1. 将完成的AIDialogueCanvas拖拽到Project窗口的Prefabs/UI文件夹中，创建prefab。
+2. 删除场景中的原始Canvas。
+
+## 8. 在UI场景中加载AI对话UI
+
+1. 打开"UI.unity"场景。
+2. 将AIDialogueUI prefab拖入场景。
+3. 确保UIManager能够访问并管理AI对话UI。 

@@ -1,0 +1,44 @@
+# AI对话NPC设置指南
+
+## 1. 修改现有NPC以支持AI对话
+
+1. 在现有NPC上，保留原有的`NPCMovement`组件。
+2. 将`DialogueController`组件替换为`AIDialogueController`组件。
+3. 在Inspector中配置`AIDialogueController`的参数：
+   - `Use AI`: 设置为true启用AI对话
+   - `NPC Role`: 定义NPC的角色（如"友好的村民"、"商人"、"农夫"等）
+   - `NPC Personality`: 定义NPC的性格特点（如"热情"、"害羞"、"神秘"等）
+   - `NPC Background`: 提供NPC的背景故事（如"在这个小镇生活了很久，了解这里的一切"）
+   - `Prompt Template`: 提示词模板，默认值通常可以满足需求
+
+## 2. 创建全新的AI对话NPC
+
+1. 复制一个现有的NPC prefab。
+2. 重命名为合适的名字（如"AI村民"）。
+3. 移除原有的`DialogueController`组件。
+4. 添加`AIDialogueController`组件。
+5. 配置AI对话参数如上所述。
+6. 保存为新的prefab。
+
+## 3. 测试NPC对话功能
+
+1. 将修改后的NPC放置在场景中。
+2. 运行游戏，靠近NPC。
+3. 按E键（默认）启动AI对话。
+4. 在输入框中键入问题，点击提交。
+5. NPC应该会使用DeepSeek API生成回复。
+6. 对话结束后，你可以选择继续对话或结束对话。
+
+## 4. AI对话的提示和技巧
+
+- 为不同NPC设置不同的角色和性格，创造多样化的体验
+- 在`NPC Background`中添加与游戏世界相关的信息，让AI回答更符合游戏背景
+- 在游戏开始前，确保玩家已在设置中输入有效的DeepSeek API密钥
+- 使用`useDebugMode`选项可在不消耗API调用次数的情况下测试UI功能
+
+## 5. 额外功能扩展建议
+
+- 添加对话历史记录功能
+- 实现NPC记忆功能，让NPC记住与玩家之前的对话
+- 添加表情系统，根据对话内容显示不同的NPC表情
+- 为重要NPC添加特定知识库，使其更专业地回答特定领域问题 
