@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using MFarm.Save;
-//×¨ÃÅÓÃÀ´¹ÜÀíÊÀ½çµØÍ¼ÖĞËùÓĞµÄÎïÆ·µÄ¹ÜÀíÀà
+//ä¸“é—¨ç®¡ç†æ‰€æœ‰åœºæ™¯ä¸­çš„ç‰©å“çš„ç®¡ç†å™¨
 namespace MFarm.Inventory
 {
     public class ItemManager : Singleton<ItemManager>,ISaveable
@@ -15,9 +15,9 @@ namespace MFarm.Inventory
 
         public string GUID => GetComponent<DataGUID>().guid;
 
-        //¼ÇÂ¼³¡¾°Item
-        private Dictionary<string, List<SceneItem>> sceneItemDict = new Dictionary<string, List<SceneItem>>();//¸Ã×ÖµäÍ¨¹ı³¡¾°ÃûÀ´±£´æ³¡¾°ÖĞ´æÔÚµÄÎïÌå
-        //¼ÇÂ¼³¡¾°ÖĞµÄ¼Ò¾ß(string:³¡¾°Ãû×Ö)
+        //è®°å½•åœºæ™¯Item
+        private Dictionary<string, List<SceneItem>> sceneItemDict = new Dictionary<string, List<SceneItem>>();//è¿™ä¸ªå­—å…¸é€šè¿‡åœºæ™¯åä½œä¸ºé”®ï¼Œå­˜æ”¾è¯¥åœºæ™¯ä¸­å­˜åœ¨çš„ç‰©å“
+        //è®°å½•åœºæ™¯ä¸­çš„å®¶å…·(string:åœºæ™¯åç§°)
         private Dictionary<string, List<SceneFurniture>> sceneFurnitureDict = new Dictionary<string, List<SceneFurniture>>();
         private void Start()
         {
@@ -26,8 +26,8 @@ namespace MFarm.Inventory
         }
         private void OnEnable()
         {
-            EventHandler.InstantiateItemInScene += OnInstantiateItemInScene;//ÎªÎ¯ÍĞÊÂ¼şÌí¼Óº¯Êı·½·¨
-            EventHandler.DropItemEvent += OnDropItemEvent;//ÈÓ¶«Î÷Î¯ÍĞÊÂ¼ş
+            EventHandler.InstantiateItemInScene += OnInstantiateItemInScene;//ä¸ºå§”æ‰˜äº‹ä»¶æ·»åŠ å›è°ƒæ–¹æ³•
+            EventHandler.DropItemEvent += OnDropItemEvent;//æ·»åŠ ä¸¢ç‰©å§”æ‰˜äº‹ä»¶
             EventHandler.BeforeSceneUnloadEvent += OnBeforeSceneUnloadEvent;
             EventHandler.AfterSceneLoadedEvent += OnAfterSceneLoadedEvent;
             EventHandler.BuildFurnitureEvent += OnBuildFurnitureEvent;
@@ -63,8 +63,8 @@ namespace MFarm.Inventory
         private void OnDropItemEvent(int ID, Vector3 mousePos,ItemType itemType)
         {
             if (itemType == ItemType.Seed) return;
-            //TODO:ÈÓ¶«Î÷µÄĞ§¹û
-            var item = Instantiate(bounceItemPrefab, playerTransform.position, Quaternion.identity, itemParent);//¿ËÂ¡ÎïÌå
+            //TODO:æ·»åŠ æ‰è½æ•ˆæœ
+            var item = Instantiate(bounceItemPrefab, playerTransform.position, Quaternion.identity, itemParent);//å…‹éš†ç‰©å“
             item.itemID = ID;
             var dir = (mousePos - playerTransform.position).normalized;
             item.GetComponent<ItemBounce>().InitBounceItem(mousePos, dir);
@@ -78,59 +78,59 @@ namespace MFarm.Inventory
 
         private void OnAfterSceneLoadedEvent()
         {
-            itemParent = GameObject.FindWithTag("ItemParent").transform;//³¡¾°¼ÓÔØÖ®ºóÔÙÑ°ÕÒItemParent±ÜÃâ±¨¿Õ
+            itemParent = GameObject.FindWithTag("ItemParent").transform;//åœºæ™¯åŠ è½½ä¹‹åå†å¯»æ‰¾ItemParenté¿å…æŠ¥é”™
             RecreateAllItems();
             RebuildFurniturn();
         }
         private void OnInstantiateItemInScene(int ID, Vector3 pos)
         {
-            var item = Instantiate(bounceItemPrefab, pos, Quaternion.identity, itemParent);//¿ËÂ¡ÎïÌå
+            var item = Instantiate(bounceItemPrefab, pos, Quaternion.identity, itemParent);//å…‹éš†ç‰©å“
             item.itemID = ID;
             item.GetComponent<ItemBounce>().InitBounceItem(pos, Vector3.up);
         }
         /// <summary>
-        /// »ñµÃµ±Ç°³¡¾°ÖĞµÄËùÓĞItem
+        /// è·å¾—å½“å‰åœºæ™¯ä¸­çš„æ‰€æœ‰Item
         /// </summary>
         private void GetAllSceneItems()
         {
-            List<SceneItem> currentSceneItems = new List<SceneItem>();//´æ·Åµ±Ç°³¡¾°ÖĞÎïÌåµÄÆ¿×Ó
+            List<SceneItem> currentSceneItems = new List<SceneItem>();//ä¸´æ—¶å½“å‰åœºæ™¯ç‰©å“åˆ—è¡¨
             foreach (var item in FindObjectsOfType<Item>())
             {
                 SceneItem sceneItem = new SceneItem()
                 {
                     ItemID = item.itemID,
                     position = new SerializableVector3(item.transform.position)
-                };//ÕÒµ½µ±Ç°³¡¾°ÖĞµÄËùÓĞItem²¢½«ËüµÄÊôĞÔ´«Èëµ½sceneItemÖĞ
-                currentSceneItems.Add(sceneItem);//ÔÙ½«sceneItem·ÅÈëÁÙÊ±ÁĞ±í
+                };//æ‰¾åˆ°å½“å‰åœºæ™¯ä¸­çš„æ‰€æœ‰Itemå¹¶å°†ç‰©å“å±æ€§å­˜å…¥åˆ°sceneItemä¸­
+                currentSceneItems.Add(sceneItem);//å†å°†sceneItemåŠ å…¥ä¸´æ—¶åˆ—è¡¨
             }
             if (sceneItemDict.ContainsKey(SceneManager.GetActiveScene().name))
             {
-                //ÕÒµ½Êı¾İ¾Í¸üĞÂItemÊı¾İÁĞ±í
+                //æ‰¾åˆ°æ•°æ®å°±æ›´æ–°Itemç‰©å“åˆ—è¡¨
                 sceneItemDict[SceneManager.GetActiveScene().name] = currentSceneItems;
             }
-            else//Èç¹ûÊÇĞÂ³¡¾°
+            else//æ·»åŠ æ–°åœºæ™¯
             {
                 sceneItemDict.Add(SceneManager.GetActiveScene().name, currentSceneItems);
             }
         }
         /// <summary>
-        /// Ë¢ĞÂÖØ½¨µ±Ç°³¡¾°ÖĞµÄÎïÆ·
+        /// åˆ·æ–°é‡å»ºå½“å‰åœºæ™¯ä¸­çš„ç‰©å“
         /// </summary>
         private void RecreateAllItems()
         {
             List<SceneItem> currentSceneItems = new List<SceneItem>();
-            //TryGetValue:¸ù¾İ¼ü³¢ÊÔµÃµ½Öµ,·µ»Øbool
-            //out currentSceneItems:·´ÏòÊä³ö,Èç¹ûÖ®Ç°µÄboolÎªtrueÔò·´ÏòÊä³öcurrentSceneItems½«sceneItemDictµÄValueÊä³öµ½currentSceneItemsÖĞ
+            //TryGetValue:æ ¹æ®é”®å¯ä»¥å¾—åˆ°å€¼,è¿”å›bool
+            //out currentSceneItems:è¾“å‡ºæ•°æ®,å¦‚æœä¹‹å‰çš„boolä¸ºtrueçš„è¯ï¼ŒæŠŠcurrentSceneItemsç»™sceneItemDictä¸­Valueçš„æ•°å³currentSceneItemså€¼
             if (sceneItemDict.TryGetValue(SceneManager.GetActiveScene().name,out currentSceneItems))
             {
                 if (currentSceneItems != null)
                 {
-                    //ÎŞÂÛ³¡¾°ÖĞÓĞÃ»ÓĞÎïÆ·ÏÈÇå³¡
+                    //æ¸…é™¤åœºæ™¯ä¸­çš„ç‰©å“å†é‡æ–°åˆ›å»ºåœºæ™¯
                     foreach (var item in FindObjectsOfType<Item>())
                     {
                         Destroy(item.gameObject);
                     }
-                    //½«µ±Ç°³¡¾°ÖĞÓĞµÄÎïÆ·¸ø¸´ÖÆµ½³¡¾°ÖĞ
+                    //æŠŠå½“å‰åœºæ™¯ä¸­æ‰€æœ‰çš„ç‰©å“é‡æ–°å®ä¾‹åŒ–å‡ºæ¥
                     foreach (var item in currentSceneItems)
                     {
                         Item newItem = Instantiate(itemPrefab, item.position.ToVector3(), Quaternion.identity, itemParent);
@@ -140,32 +140,32 @@ namespace MFarm.Inventory
             }
         }
         /// <summary>
-        /// »ñÈ¡³¡¾°ÖĞµÄËùÓĞ¼Ò¾ß
+        /// è·å–åœºæ™¯ä¸­çš„æ‰€æœ‰å®¶å…·
         /// </summary>
         private void GetAllSceneFurnitures()
         {
-            List<SceneFurniture> currentSceneFurnitures = new List<SceneFurniture>();//´æ·Åµ±Ç°³¡¾°ÖĞÎïÌåµÄÆ¿×Ó
+            List<SceneFurniture> currentSceneFurnitures = new List<SceneFurniture>();//ä¸´æ—¶å½“å‰åœºæ™¯ç‰©å“åˆ—è¡¨
             foreach (var item in FindObjectsOfType<Furniture>())
             {
                 SceneFurniture sceneFurniture = new SceneFurniture()
                 {
                     ItemID = item.itemID,
                     position = new SerializableVector3(item.transform.position)
-                };//ÕÒµ½µ±Ç°³¡¾°ÖĞµÄËùÓĞFurniture²¢½«ËüµÄÊôĞÔ´«Èëµ½sceneFurnitureÖĞ
-                currentSceneFurnitures.Add(sceneFurniture);//ÔÙ½«sceneFurniture·ÅÈëÁÙÊ±ÁĞ±í
+                };//æ‰¾åˆ°å½“å‰åœºæ™¯ä¸­çš„æ‰€æœ‰Furnitureå¹¶å°†ç‰©å“å±æ€§å­˜å…¥åˆ°sceneFurnitureä¸­
+                currentSceneFurnitures.Add(sceneFurniture);//å†å°†sceneFurnitureåŠ å…¥ä¸´æ—¶åˆ—è¡¨
             }
             if (sceneFurnitureDict.ContainsKey(SceneManager.GetActiveScene().name))
             {
-                //ÕÒµ½Êı¾İ¾Í¸üĞÂFurnitureÊı¾İÁĞ±í
+                //æ‰¾åˆ°æ•°æ®å°±æ›´æ–°Furnitureç‰©å“åˆ—è¡¨
                 sceneFurnitureDict[SceneManager.GetActiveScene().name] = currentSceneFurnitures;
             }
-            else//Èç¹ûÊÇĞÂ³¡¾°
+            else//æ·»åŠ æ–°åœºæ™¯
             {
                 sceneFurnitureDict.Add(SceneManager.GetActiveScene().name, currentSceneFurnitures);
             }
         }
         /// <summary>
-        /// ÖØ½¨µ±Ç°³¡¾°¼Ò¾ß
+        /// é‡å»ºå½“å‰åœºæ™¯å®¶å…·
         /// </summary>
         private void RebuildFurniturn()
         {
@@ -190,7 +190,7 @@ namespace MFarm.Inventory
         public GameSaveData GenerateSaveData()
         {
             GetAllSceneItems();
-            GetAllSceneFurnitures();//ÒòÎª³¡¾°ÖĞµÄÎïÆ·ÊÇÔÚ³¡¾°¼ÓÔØĞ¶ÔØºó²Å±£´æµÄ,Î´Ğ¶ÔØÇ°ÄÃ²»µ½ËùÓĞÎïÆ·»ò¼Ò¾ß,±ØĞëÕâÀïÊÖ¶¯ÄÃÒ»ÏÂ
+            GetAllSceneFurnitures();//å› ä¸ºæ‰€æœ‰çš„ç‰©å“å­˜åœ¨åœºæ™¯ä¸­äº’åŠ¨å’Œç§»åŠ¨è„šæœ¬å˜åŒ–,æœªäº’åŠ¨å‰å…ˆä¿å­˜æ‰€æœ‰ç‰©å“å®¶å…·,ä¸èƒ½ä¸¢å¤±æ•°æ®
             GameSaveData saveData = new GameSaveData();
             saveData.sceneItemDict = this.sceneItemDict;
             saveData.sceneFurnitureDict = this.sceneFurnitureDict;
@@ -202,7 +202,7 @@ namespace MFarm.Inventory
             this.sceneItemDict = saveDate.sceneItemDict;
             this.sceneFurnitureDict = saveDate.sceneFurnitureDict;
             RecreateAllItems();
-            RebuildFurniturn();//Ë¢ĞÂ
+            RebuildFurniturn();//åˆ·æ–°
         }
     }
 }

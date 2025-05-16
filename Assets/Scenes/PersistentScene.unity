@@ -358,6 +358,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   startDirector: {fileID: 1322520130}
+  playbackSpeed: 1.65
+  skipButton: {fileID: 0}
 --- !u!114 &25991371
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3542,6 +3544,7 @@ GameObject:
   - component: {fileID: 794200112}
   - component: {fileID: 794200111}
   - component: {fileID: 794200110}
+  - component: {fileID: 794200118}
   m_Layer: 0
   m_Name: NPC_Girl_02
   m_TagString: Untagged
@@ -3790,6 +3793,28 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 1
+--- !u!114 &794200118
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 794200108}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: de5b0ef99e359834ca62655dc713dd2a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  OnFinishEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  dialogueList: []
+  useAI: 1
+  npcRole: "\u53CB\u597D\u7684\u6751\u6C11"
+  npcPersonality: "\u70ED\u60C5\u3001\u4E50\u4E8E\u52A9\u4EBA"
+  npcBackground: "\u5728\u8FD9\u4E2A\u5C0F\u9547\u751F\u6D3B\u4E86\u5F88\u4E45\uFF0C\u4E86\u89E3\u8FD9\u91CC\u7684\u4E00\u5207\u3002"
+  promptTemplate: "\u4F60\u662F\u4E00\u4E2A\u540D\u53EB{0}\u7684{1}\uFF0C\u6027\u683C{2}\u3002{3}\u8BF7\u4EE5\u53CB\u597D\u7684\u65B9\u5F0F\u56DE\u5E94\u73A9\u5BB6\u7684\u95EE\u9898\uFF1A\n{4}"
+  npcPortrait: {fileID: 0}
 --- !u!1 &811948467
 GameObject:
   m_ObjectHideFlags: 0
@@ -3876,7 +3901,7 @@ Transform:
   m_GameObject: {fileID: 858129045}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 22, y: -2, z: 0}
+  m_LocalPosition: {x: 5.56, y: -7.04, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -5278,6 +5303,7 @@ GameObject:
   - component: {fileID: 1308913698}
   - component: {fileID: 1308913697}
   - component: {fileID: 1308913699}
+  - component: {fileID: 1308913700}
   m_Layer: 0
   m_Name: NPC_Girl_01
   m_TagString: Untagged
@@ -5481,7 +5507,7 @@ MonoBehaviour:
   OnFinishEvent:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1308913698}
+      - m_Target: {fileID: 1573246429, guid: 85f3f75b0912741b0bc48e7f38554cd2, type: 3}
         m_TargetAssemblyTypeName: NPCFunction, Assembly-CSharp
         m_MethodName: OpenShop
         m_Mode: 1
@@ -5494,7 +5520,7 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
   dialogueList:
-  - faceImage: {fileID: 21300000, guid: 3a465f460d75b4ec18ebd486218e7339, type: 3}
+  - faceImage: {fileID: 0}
     onLeft: 1
     name: Mirre
     dialogueText: "\u4F60\u597D\u9E2D~\u6765\u770B\u770B\u6709\u4EC0\u4E48\u9700\u8981\u7684~"
@@ -5526,6 +5552,28 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   guid: 52d90cc9-8ad0-4a2b-8960-88b74b35bcfc
+--- !u!114 &1308913700
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1308913690}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: de5b0ef99e359834ca62655dc713dd2a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  OnFinishEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  dialogueList: []
+  useAI: 1
+  npcRole: "\u53CB\u597D\u7684\u6751\u6C11"
+  npcPersonality: "\u70ED\u60C5\u3001\u4E50\u4E8E\u52A9\u4EBA"
+  npcBackground: "\u5728\u8FD9\u4E2A\u5C0F\u9547\u751F\u6D3B\u4E86\u5F88\u4E45\uFF0C\u4E86\u89E3\u8FD9\u91CC\u7684\u4E00\u5207\u3002"
+  promptTemplate: "\u4F60\u662F\u4E00\u4E2A\u540D\u53EB{0}\u7684{1}\uFF0C\u6027\u683C{2}\u3002{3}\u8BF7\u4EE5\u53CB\u597D\u7684\u65B9\u5F0F\u56DE\u5E94\u73A9\u5BB6\u7684\u95EE\u9898\uFF1A\n{4}"
+  npcPortrait: {fileID: 21300000, guid: bcb4accdbcb044b98bc839a4ab34d0f6, type: 3}
 --- !u!1 &1310498178
 GameObject:
   m_ObjectHideFlags: 0
@@ -8118,7 +8166,7 @@ Transform:
   m_GameObject: {fileID: 2065040013}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.51, y: -4.6, z: 0}
+  m_LocalPosition: {x: -0.73, y: -1.99, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:

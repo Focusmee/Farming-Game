@@ -10,21 +10,21 @@ using MFarm.Save;
 public class NPCMovement : MonoBehaviour,ISaveable
 {
     public SchedulDataList_SO schedulData;
-    private SortedSet<SchedulDetails> scheduleSet;//Ê¼ÖÕ±£³ÖÆäÖÐÄÚÈÝµÄÅÅÐòË³ÐòÒÔ¼°Î¨Ò»ÐÔµÄ¼¯ºÏ
+    private SortedSet<SchedulDetails> scheduleSet;//Ê¼ï¿½Õ±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ýµï¿½ï¿½ï¿½ï¿½ï¿½Ë³ï¿½ï¿½ï¿½Ô¼ï¿½Î¨Ò»ï¿½ÔµÄ¼ï¿½ï¿½ï¿½
     private SchedulDetails currentSchedule;
-    //ÁÙÊ±´æ´¢ÐÅÏ¢
+    //ï¿½ï¿½Ê±ï¿½æ´¢ï¿½ï¿½Ï¢
     [SerializeField]private string currentScene;
     private string targetScene;
-    private Vector3Int currentGridPostion;//µ±Ç°Íø¸ñÎ»ÖÃ
-    private Vector3Int targetGridPostion;//Ä¿±êÍø¸ñÎ»ÖÃ
-    private Vector3Int nextGridPosition;//ÏÂÒ»²½Íø¸ñÎ»ÖÃ×ø±ê
-    private Vector3 nextWorldPosition;//ÏÂÒ»²½µÄÊÀ½ç×ø±ê
-    public string StartScene { set => currentScene = value; }//NPCÔÚÒ»¿ªÊ¼ËùÔÚµÄ³¡¾°
-    [Header("ÒÆ¶¯ÊôÐÔ")]
+    private Vector3Int currentGridPostion;//ï¿½ï¿½Ç°ï¿½ï¿½ï¿½ï¿½Î»ï¿½ï¿½
+    private Vector3Int targetGridPostion;//Ä¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î»ï¿½ï¿½
+    private Vector3Int nextGridPosition;//ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    private Vector3 nextWorldPosition;//ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    public string StartScene { set => currentScene = value; }//NPCï¿½ï¿½Ò»ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ÚµÄ³ï¿½ï¿½ï¿½
+    [Header("ï¿½Æ¶ï¿½ï¿½ï¿½ï¿½ï¿½")]
     public float normalSpeed = 2f;
     private float minSpeed = 1;
     private float maxSpeed = 3;
-    private Vector2 dir;//·½Ïò
+    private Vector2 dir;//ï¿½ï¿½ï¿½ï¿½
     public bool isMoving;
     //Component
     private Rigidbody2D rb;
@@ -33,24 +33,24 @@ public class NPCMovement : MonoBehaviour,ISaveable
     private Animator anim;
     private Grid grid;
     private Stack<MovementStep> movementSteps;
-    private Coroutine npcMoveRoutine;//NPCÒÆ¶¯µÄÒ»¸öÐ­³Ì½«Ëü×÷Îª±äÁ¿²Ù×÷
-    private bool isInitialised;//ÅÐ¶ÏNPCÊÇ·ñÊÇµÚÒ»´Î¼ÓÔØ
-    private bool npcMove;//ÅÐ¶ÏNPCÊÇ·ñÒÆ¶¯
-    private bool sceneLoaded;//ÅÐ¶Ï³¡¾°ÊÇ·ñ¼ÓÔØÍê±Ï
-    public bool interactable;//ÊÇ·ñ¿ÉÒÔ»¥¶¯
+    private Coroutine npcMoveRoutine;//NPCï¿½Æ¶ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Ð­ï¿½Ì½ï¿½ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    private bool isInitialised;//ï¿½Ð¶ï¿½NPCï¿½Ç·ï¿½ï¿½Çµï¿½Ò»ï¿½Î¼ï¿½ï¿½ï¿½
+    private bool npcMove;//ï¿½Ð¶ï¿½NPCï¿½Ç·ï¿½ï¿½Æ¶ï¿½
+    private bool sceneLoaded;//ï¿½Ð¶Ï³ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    public bool interactable;//ï¿½Ç·ï¿½ï¿½ï¿½Ô»ï¿½ï¿½ï¿½
     public bool isFirstLoad;
     private Season currentSeason;
-    private float animationBreakTime;//¶¯»­¼ÆÊ±Æ÷
+    private float animationBreakTime;//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½
     private bool canPlayStopAnimation;
     private AnimationClip stopAnimationClip;
-    public AnimationClip blankAnimationClip;//¶¨ÒåÒ»¸ö¿Õ°×µÄ¶¯»­Æ¬¶Î
-    private AnimatorOverrideController animOverride;//ÖØ¹¹Ò»¸ö¶¯»­¿ØÖÆÆ÷
-    private TimeSpan GameTime => TimeManager.Instance.GameTime;//TimeSpan:±íÊ¾Ò»¸öÊ±¼ä´Á
+    public AnimationClip blankAnimationClip;//ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½Õ°×µÄ¶ï¿½ï¿½ï¿½Æ¬ï¿½ï¿½
+    private AnimatorOverrideController animOverride;//ï¿½Ø¹ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    private TimeSpan GameTime => TimeManager.Instance.GameTime;//TimeSpan:ï¿½ï¿½Ê¾Ò»ï¿½ï¿½Ê±ï¿½ï¿½ï¿½
 
     public string GUID => GetComponent<DataGUID>().guid;
 
-    //×÷ÓÃ:ÀýÈç,¶¨ÒåÒ»¸öÊ±¼ä´Á TimeSpan targetTime = new TimeSpan(10,20); Õâ¸öÊ±¼ä´Á¾ÍÊÇ10·Ö20Ãë
-    //ÓµÓÐÊ±¼ä´ÁÖ®ºó¿ÉÒÔÀûÓÃÊ±¼ä´Á×÷ÎªÌõ¼þ,±ÈÈçGameTimeÓÎÏ·Ê±¼äµ½´ï10·Ö20ÃëÊ±ÄÜ¹»´¥·¢Ê²Ã´ÊÂ¼þ
+    //ï¿½ï¿½ï¿½ï¿½:ï¿½ï¿½ï¿½ï¿½,ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ TimeSpan targetTime = new TimeSpan(10,20); ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½10ï¿½ï¿½20ï¿½ï¿½
+    //Óµï¿½ï¿½Ê±ï¿½ï¿½ï¿½Ö®ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½,ï¿½ï¿½ï¿½ï¿½GameTimeï¿½ï¿½Ï·Ê±ï¿½äµ½ï¿½ï¿½10ï¿½ï¿½20ï¿½ï¿½Ê±ï¿½Ü¹ï¿½ï¿½ï¿½ï¿½ï¿½Ê²Ã´ï¿½Â¼ï¿½
 
     private void Awake()
     {
@@ -61,7 +61,7 @@ public class NPCMovement : MonoBehaviour,ISaveable
         movementSteps = new Stack<MovementStep>();
         animOverride = new AnimatorOverrideController(anim.runtimeAnimatorController);
         anim.runtimeAnimatorController = animOverride;
-        //runtimeAnimatorController:AnimatorControllerµÄÔËÐÐÊ±±íÊ¾.Ê¹ÓÃ´Ë±íÊ¾¿ÉÔÚÔËÐÐÊ±ÆÚ¼ä¸ü¸ÄAnimatorController¡£
+        //runtimeAnimatorController:AnimatorControllerï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½Ê¾.Ê¹ï¿½Ã´Ë±ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½Ú¼ï¿½ï¿½ï¿½ï¿½AnimatorControllerï¿½ï¿½
         scheduleSet = new SortedSet<SchedulDetails>();
         foreach (var schedule in schedulData.schedulList)
         {
@@ -110,13 +110,13 @@ public class NPCMovement : MonoBehaviour,ISaveable
     {
         if (sceneLoaded)
             SwitchAnimation();
-        //¼ÆÊ±Æ÷
+        //ï¿½ï¿½Ê±ï¿½ï¿½
         animationBreakTime -= Time.deltaTime;
         canPlayStopAnimation = animationBreakTime <= 0;
     }
     private void FixedUpdate()
     {
-        if (sceneLoaded)//Èç¹û³¡¾°¼ÓÔØÁË²Å¿ÉÒÔÈÃNPCÒÆ¶¯
+        if (sceneLoaded)//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ë²Å¿ï¿½ï¿½ï¿½ï¿½ï¿½NPCï¿½Æ¶ï¿½
         {
             Movement();
         }
@@ -132,7 +132,7 @@ public class NPCMovement : MonoBehaviour,ISaveable
         CheckVisiable();
         if (!isInitialised)
         {
-            InitNPC();//µÚÒ»´Î¼ÓÔØµÄ»°¾Í³õÊ¼»¯NPC
+            InitNPC();//ï¿½ï¿½Ò»ï¿½Î¼ï¿½ï¿½ØµÄ»ï¿½ï¿½Í³ï¿½Ê¼ï¿½ï¿½NPC
             isInitialised = true;
         }
         sceneLoaded = true;
@@ -178,26 +178,26 @@ public class NPCMovement : MonoBehaviour,ISaveable
     }
     private void InitNPC()
     {
-        targetScene = currentScene;//³õÊ¼»¯Ä¿±ê³¡¾°¾ÍÊÇµ±Ç°³¡¾°
-        //±£³ÖÔÚµ±Ç°×ø±êµÄÍø¸ñÖÐÐÄµã
-        currentGridPostion = grid.WorldToCell(transform.position);//ÊÀ½ç×ø±ê×ª»¯ÎªÍø¸ñ×ø±ê
+        targetScene = currentScene;//ï¿½ï¿½Ê¼ï¿½ï¿½Ä¿ï¿½ê³¡ï¿½ï¿½ï¿½ï¿½ï¿½Çµï¿½Ç°ï¿½ï¿½ï¿½ï¿½
+        //ï¿½ï¿½ï¿½ï¿½ï¿½Úµï¿½Ç°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Äµï¿½
+        currentGridPostion = grid.WorldToCell(transform.position);//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×ªï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         transform.position = new Vector3(currentGridPostion.x + Settings.gridCellSize / 2f, currentGridPostion.y + Settings.gridCellSize / 2f, 0);
         targetGridPostion = currentGridPostion;
     }
     /// <summary>
-    /// Ö÷ÒªÒÆ¶¯·½·¨
+    /// ï¿½ï¿½Òªï¿½Æ¶ï¿½ï¿½ï¿½ï¿½ï¿½
     /// </summary>
     private void Movement()
     {
         if (!npcMove)
         {
-            if (movementSteps.Count>0)//ÅÐ¶ÏÒÆ¶¯Â·¾¶¶ÑÕ»ÖÐÊÇ·ñÓÐ¹¹½¨ºÃµÄ²½ÖèÂ·¾¶
+            if (movementSteps.Count>0)//ï¿½Ð¶ï¿½ï¿½Æ¶ï¿½Â·ï¿½ï¿½ï¿½ï¿½Õ»ï¿½ï¿½ï¿½Ç·ï¿½ï¿½Ð¹ï¿½ï¿½ï¿½ï¿½ÃµÄ²ï¿½ï¿½ï¿½Â·ï¿½ï¿½
             {
-                MovementStep step = movementSteps.Pop();//ÄÃµ½¶ÑÕ»ÖÐµÄµÚÒ»²½²¢ÇÒ´Ó¶ÑÕ»ÖÐÒÆ³ýËü
-                currentScene = step.sceneName;//µ±Ç°³¡¾°µÈÓÚ²½ÖèÖÐ´æ·ÅµÄ³¡¾°
-                CheckVisiable();//ÊµÊ±¼ì²âNPCÊÇ·ñ¿É¼û
+                MovementStep step = movementSteps.Pop();//ï¿½Ãµï¿½ï¿½ï¿½Õ»ï¿½ÐµÄµï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½Ò´Ó¶ï¿½Õ»ï¿½ï¿½ï¿½Æ³ï¿½ï¿½ï¿½
+                currentScene = step.sceneName;//ï¿½ï¿½Ç°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú²ï¿½ï¿½ï¿½ï¿½Ð´ï¿½ÅµÄ³ï¿½ï¿½ï¿½
+                CheckVisiable();//ÊµÊ±ï¿½ï¿½ï¿½NPCï¿½Ç·ï¿½É¼ï¿½
                 nextGridPosition = (Vector3Int)step.gridCoordinate;
-                TimeSpan stepTime = new TimeSpan(step.hour, step.minute, step.second);//ÄÃµ½ÕâÒ»²½µÄÊ±¼ä´Á
+                TimeSpan stepTime = new TimeSpan(step.hour, step.minute, step.second);//ï¿½Ãµï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½
                 MoveToGridPosition(nextGridPosition, stepTime);
             }
             else if (!isMoving && canPlayStopAnimation)
@@ -210,33 +210,33 @@ public class NPCMovement : MonoBehaviour,ISaveable
     {
         npcMoveRoutine = StartCoroutine(MoveRoutine(gridPos, stepTime));
     }
-    //ÒòÎªNPCµÄÒÆ¶¯ÍÑÀëÓÚÖ÷³Ì(×Ô¼ºÔÚ³¡¾°ÖÐ×Ô¼º¹ÜÀí×Ô¼ºÒÆ¶¯)ËùÒÔÒªÓÃÐ­³Ì¸¨Öú
+    //ï¿½ï¿½ÎªNPCï¿½ï¿½ï¿½Æ¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(ï¿½Ô¼ï¿½ï¿½Ú³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô¼ï¿½ï¿½Æ¶ï¿½)ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½Ð­ï¿½Ì¸ï¿½ï¿½ï¿½
     private IEnumerator MoveRoutine(Vector3Int gridPos,TimeSpan stepTime)
     {
-        npcMove = true;//NPCÒÆ¶¯×´Ì¬¸ÄÎªtrue
+        npcMove = true;//NPCï¿½Æ¶ï¿½×´Ì¬ï¿½ï¿½Îªtrue
         nextWorldPosition = GetWorldPosition(gridPos);
-        if (stepTime > GameTime)//Èç¹ûÓÎÏ·Ê±¼ä»¹Ã»µ½µ±Ç°µ½ÕâÒ»²½µÄÊ±¼ä´Á
+        if (stepTime > GameTime)//ï¿½ï¿½ï¿½ï¿½ï¿½Ï·Ê±ï¿½ä»¹Ã»ï¿½ï¿½ï¿½ï¿½Ç°ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½
         {
-            //»ñÈ¡ÓÃÀ´ÒÆ¶¯µÄÊ±¼ä²î,ÒÔÃëÎªµ¥Î»
+            //ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½Æ¶ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½,ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½Î»
             float timeToMove = (float)(stepTime.TotalSeconds - GameTime.TotalSeconds);
-            //Êµ¼ÊÒÆ¶¯¾àÀë
+            //Êµï¿½ï¿½ï¿½Æ¶ï¿½ï¿½ï¿½ï¿½ï¿½
             float distance = Vector3.Distance(transform.position, nextWorldPosition);
-            //¼ÆËãNPCµÄÊµ¼ÊÒÆ¶¯ËÙ¶È
-            float speed = Mathf.Max(minSpeed, (distance / timeToMove / Settings.secondThreshold));//Óë×îÐ¡Öµ×÷±È½ÏÊÇÎªÁËÈ·±£ËÙ¶È²»»áµÍÓÚ×îÐ¡Öµ
-            //ËÙ¶È=¾àÀë/Ê±¼ä(m/s)
+            //ï¿½ï¿½ï¿½ï¿½NPCï¿½ï¿½Êµï¿½ï¿½ï¿½Æ¶ï¿½ï¿½Ù¶ï¿½
+            float speed = Mathf.Max(minSpeed, (distance / timeToMove / Settings.secondThreshold));//ï¿½ï¿½ï¿½ï¿½Ð¡Öµï¿½ï¿½ï¿½È½ï¿½ï¿½ï¿½Îªï¿½ï¿½È·ï¿½ï¿½ï¿½Ù¶È²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¡Öµ
+            //ï¿½Ù¶ï¿½=ï¿½ï¿½ï¿½ï¿½/Ê±ï¿½ï¿½(m/s)
 
-            if (speed <= maxSpeed)//Í¬Ñù²»ÄÜ´óÓÚ×î´óÒÆ¶¯ËÙ¶È
+            if (speed <= maxSpeed)//Í¬ï¿½ï¿½ï¿½ï¿½ï¿½Ü´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ¶ï¿½ï¿½Ù¶ï¿½
             {
-                while (Vector3.Distance(transform.position, nextWorldPosition) > Settings.pixelSize)//Èç¹ûNPCµ±Ç°¾àÀëºÍÏÂÒ»²½Òªµ½´ïµÄ¾àÀë»¹´óÓÚÒ»¸öÏñËØµãËµÃ÷»¹Ã»ÓÐ×ßµ½
+                while (Vector3.Distance(transform.position, nextWorldPosition) > Settings.pixelSize)//ï¿½ï¿½ï¿½NPCï¿½ï¿½Ç°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½Ä¾ï¿½ï¿½ë»¹ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½Øµï¿½Ëµï¿½ï¿½ï¿½ï¿½Ã»ï¿½ï¿½ï¿½ßµï¿½
                 {
-                    dir = (nextWorldPosition - transform.position).normalized;//NPCÒÆ¶¯·½Ïò
-                    Vector2 posOffset = new Vector2(dir.x * speed * Time.fixedDeltaTime, dir.y * speed * Time.fixedDeltaTime);//ÒÆ¶¯Æ«²î
-                    rb.MovePosition(rb.position + posOffset);//ÒÆ¶¯¸ÕÌåµ½Ä³¸öÎ»ÖÃ
-                    yield return new WaitForFixedUpdate();//µÈ´ýÒ»Ð¡»á¶ù
+                    dir = (nextWorldPosition - transform.position).normalized;//NPCï¿½Æ¶ï¿½ï¿½ï¿½ï¿½ï¿½
+                    Vector2 posOffset = new Vector2(dir.x * speed * Time.fixedDeltaTime, dir.y * speed * Time.fixedDeltaTime);//ï¿½Æ¶ï¿½Æ«ï¿½ï¿½
+                    rb.MovePosition(rb.position + posOffset);//ï¿½Æ¶ï¿½ï¿½ï¿½ï¿½åµ½Ä³ï¿½ï¿½Î»ï¿½ï¿½
+                    yield return new WaitForFixedUpdate();//ï¿½È´ï¿½Ò»Ð¡ï¿½ï¿½ï¿½
                 }
             }
         }
-        //Èç¹ûÊ±¼äÒÑ¾­µ½ÁË¾ÍË²ÒÆ
+        //ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½Ñ¾ï¿½ï¿½ï¿½ï¿½Ë¾ï¿½Ë²ï¿½ï¿½
         rb.position = nextWorldPosition;
         currentGridPostion = gridPos;
         nextGridPosition = currentGridPostion;
@@ -244,18 +244,18 @@ public class NPCMovement : MonoBehaviour,ISaveable
         npcMove = false;
     }
     /// <summary>
-    /// ¸ù¾ÝScheduleÊ±¼ä±í¹¹½¨Â·¾¶
+    /// ï¿½ï¿½ï¿½ï¿½ScheduleÊ±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â·ï¿½ï¿½
     /// </summary>
     /// <param name="schedule"></param>
     public void BuildPath(SchedulDetails schedule)
     {
-        movementSteps.Clear();//ÇåÀíÖ®Ç°¶ÑÕ»ÖÐµÄÂ·¾¶
+        movementSteps.Clear();//ï¿½ï¿½ï¿½ï¿½Ö®Ç°ï¿½ï¿½Õ»ï¿½Ðµï¿½Â·ï¿½ï¿½
         currentSchedule = schedule;
         targetScene = schedule.targetScene;
         targetGridPostion = (Vector3Int)schedule.targetGridPosition;
         stopAnimationClip = schedule.clipAtStop;
         this.interactable = schedule.interactable;
-        if (schedule.targetScene == currentScene)//Èç¹ûÄ¿±ê³¡¾°ºãµÈÓÚµ±Ç°³¡¾°,ÔòÀûÓÃAStar¿ªÊ¼¹¹½¨×î¶ÌÂ·¾¶
+        if (schedule.targetScene == currentScene)//ï¿½ï¿½ï¿½Ä¿ï¿½ê³¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Úµï¿½Ç°ï¿½ï¿½ï¿½ï¿½,ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½AStarï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â·ï¿½ï¿½
         {
             AStar.Instance.BuildPath(schedule.targetScene, (Vector2Int)currentGridPostion, schedule.targetGridPosition, movementSteps);
         }
@@ -289,14 +289,14 @@ public class NPCMovement : MonoBehaviour,ISaveable
             }
         }
 
-        if (movementSteps.Count > 1)//Â·¾¶´óÓÚ1´ú±í¿ÉÒÔÒÆ¶¯ÁË
+        if (movementSteps.Count > 1)//Â·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½1ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ¶ï¿½ï¿½ï¿½
         {
-            //¸üÐÂÃ¿Ò»²½µÄÊ±¼äÊ±¼ä´Á
+            //ï¿½ï¿½ï¿½ï¿½Ã¿Ò»ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½Ê±ï¿½ï¿½ï¿½
             UpdateTimeOnPath();
         }
     }
     /// <summary>
-    /// ¸üÐÂNPCÃ¿×ßÒ»²½µÄÊ±¼ä´Á
+    /// ï¿½ï¿½ï¿½ï¿½NPCÃ¿ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½
     /// </summary>
     private void UpdateTimeOnPath()
     {
@@ -304,31 +304,31 @@ public class NPCMovement : MonoBehaviour,ISaveable
 
         TimeSpan currentGameTime = GameTime;
 
-        foreach (MovementStep step in movementSteps)//ÕâÀïAStarËã·¨ÒÑ¾­¹¹½¨ºÃÁË¶ÑÕ»,ÀïÃæÓÐÁËÃ¿Ò»²½µÄÀà
+        foreach (MovementStep step in movementSteps)//ï¿½ï¿½ï¿½ï¿½AStarï¿½ã·¨ï¿½Ñ¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ë¶ï¿½Õ»,ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã¿Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         {
-            if (previousSetp == null)//ÓÎÏ·Ò»¿ªÊ¼NPCÃ»ÓÐÉÏÒ»²½,ËùÒÔÖ±½Ó½«µÚÒ»²½´«µÝ¸ø¸¸²½
+            if (previousSetp == null)//ï¿½ï¿½Ï·Ò»ï¿½ï¿½Ê¼NPCÃ»ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½,ï¿½ï¿½ï¿½ï¿½Ö±ï¿½Ó½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½Ý¸ï¿½ï¿½ï¿½ï¿½ï¿½
                 previousSetp = step;
 
             step.hour = currentGameTime.Hours;
             step.minute = currentGameTime.Minutes;
-            step.second = currentGameTime.Seconds;//¼ÇÂ¼µ±Ç°µÄÓÎÏ·Ê±¼ä´Á
+            step.second = currentGameTime.Seconds;//ï¿½ï¿½Â¼ï¿½ï¿½Ç°ï¿½ï¿½ï¿½ï¿½Ï·Ê±ï¿½ï¿½ï¿½
 
-            TimeSpan gridMovementStepTime;//¶¨ÒåÒ»¸öÐÂµÄÊ±¼ä´ÁÀ´»ñÈ¡×ßµÄÃ¿Ò»²½µÄÊ±¼ä´Á
+            TimeSpan gridMovementStepTime;//ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½Âµï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¡ï¿½ßµï¿½Ã¿Ò»ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½
 
-            if (MoveInDiagonal(step, previousSetp))//ÅÐ¶ÏÊÇ·ñÊÇÐ±·½ÏòÒÆ¶¯,Ð±·½ÏòÒÆ¶¯ºÍÖ±·½ÏòËùÐèÒªµÄÊ±¼ä´Á²»ÏàÍ¬
+            if (MoveInDiagonal(step, previousSetp))//ï¿½Ð¶ï¿½ï¿½Ç·ï¿½ï¿½ï¿½Ð±ï¿½ï¿½ï¿½ï¿½ï¿½Æ¶ï¿½,Ð±ï¿½ï¿½ï¿½ï¿½ï¿½Æ¶ï¿½ï¿½ï¿½Ö±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¬
                 gridMovementStepTime = new TimeSpan(0, 0, (int)(Settings.gridCellDiagonalSize / normalSpeed / Settings.secondThreshold));
             else
                 gridMovementStepTime = new TimeSpan(0, 0, (int)(Settings.gridCellSize / normalSpeed / Settings.secondThreshold));
 
-            //ÀÛ¼Ó»ñµÃÏÂÒ»²½µÄÊ±¼ä´Á
-            currentGameTime = currentGameTime.Add(gridMovementStepTime);//ÓÎÏ·Ê±¼ä´ÁºÍ×ßÂ·Ê±¼ä´ÁÀÛ¼ÓÆðÀ´ÐÎ³ÉÒ»¸öÊ±¼ä´ÁÌõ¼þ
-            //Ñ­»·ÏÂÒ»²½´Ë²½±äÎª¸¸²½
+            //ï¿½Û¼Ó»ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½
+            currentGameTime = currentGameTime.Add(gridMovementStepTime);//ï¿½ï¿½Ï·Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â·Ê±ï¿½ï¿½ï¿½ï¿½Û¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î³ï¿½Ò»ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+            //Ñ­ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½Ë²ï¿½ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½
             previousSetp = step;
         }
     }
 
     /// <summary>
-    /// ÅÐ¶ÏÊÇ·ñ×ßÐ±·½Ïò
+    /// ï¿½Ð¶ï¿½ï¿½Ç·ï¿½ï¿½ï¿½Ð±ï¿½ï¿½ï¿½ï¿½
     /// </summary>
     /// <param name="currentStep"></param>
     /// <param name="previousStep"></param>
@@ -338,9 +338,9 @@ public class NPCMovement : MonoBehaviour,ISaveable
         return (currentStep.gridCoordinate.x != previousStep.gridCoordinate.x) && (currentStep.gridCoordinate.y != previousStep.gridCoordinate.y);
     }
     /// <summary>
-    /// µÃµ½Íø¸ñÖÐÐÄµÄÊÀ½ç×ø±ê
+    /// ï¿½Ãµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Äµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     /// </summary>
-    /// <param name="gridPos">Íø¸ñ×ø±ê</param>
+    /// <param name="gridPos">ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½</param>
     /// <returns></returns>
     private Vector3 GetWorldPosition(Vector3Int gridPos)
     {
@@ -364,7 +364,7 @@ public class NPCMovement : MonoBehaviour,ISaveable
     }
     private IEnumerator SetStopAnimation()
     {
-        //Ç¿ÖÆÃæÏò¾µÍ·
+        //Ç¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í·
         anim.SetFloat("DirX", 0);
         anim.SetFloat("DirY", -1);
         animationBreakTime = Settings.animationBreakTime;
@@ -381,7 +381,7 @@ public class NPCMovement : MonoBehaviour,ISaveable
             anim.SetBool("EventAnimation", false);
         }
     }
-    #region ÉèÖÃNPCÏÔÊ¾Çé¿ö
+    #region ï¿½ï¿½ï¿½ï¿½NPCï¿½ï¿½Ê¾ï¿½ï¿½ï¿½
     private void SetActiveInScene()
     {
         spriteRenderer.enabled = true;

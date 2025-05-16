@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using MFarm.Save;
-public class TimeManager : Singleton<TimeManager>,ISaveable
+public class TimeManager : Singleton<TimeManager>, ISaveable
 {
     private int gameSecond, gameMinute, gameHour, gameDay, gameMonth, gameYear;
-    private Season gameSeason = Season.´ºÌì;//Ä¬ÈÏÓÎÏ·½øÈëÎª´ºÌì
-    private int monthInSeason = 3;//Èı¸öÔÂÎªÒ»¸ö¼¾½Ú
-    private bool gameClockPause;//¶¨ÒåÒ»¸ö²¼¶ûÖµÀ´¿ØÖÆÓÎÏ·µÄÔİÍ£
-    private float tikTime;//¼ÆÊ±Æ÷
-    private float timeDifference;//µÆ¹âÊ±¼ä²î
+    private Season gameSeason = Season.æ˜¥å¤©;//é»˜è®¤æ¸¸æˆè¿›å…¥ä¸ºæ˜¥å¤©
+    private int monthInSeason = 3;//ä¸‰ä¸ªæœˆä¸ºä¸€ä¸ªå­£èŠ‚
+    private bool gameClockPause;//å®šä¹‰ä¸€ä¸ªå¸ƒå°”å€¼æ¥æ§åˆ¶æ¸¸æˆçš„æš‚åœ
+    private float tikTime;//è®¡æ—¶å™¨
+    private float timeDifference;//ç¯å…‰æ—¶é—´å·®
     public TimeSpan GameTime => new TimeSpan(gameHour, gameMinute, gameSecond);
 
     public string GUID => GetComponent<DataGUID>().guid;
@@ -59,19 +59,19 @@ public class TimeManager : Singleton<TimeManager>,ISaveable
 
     private void Start()
     {
-/*        EventHandler.CallGameDateSeason(gameHour, gameDay, gameMonth, gameYear, gameSeason);
-        EventHandler.CallGameMinuteEvent(gameMinute, gameHour,gameSeason,gameDay);
-        //ÇĞ»»µÆ¹â
-        EventHandler.CallLightShiftChangeEvent(gameSeason, GetCurrentLightShift(), timeDifference);*/
+        /*        EventHandler.CallGameDateSeason(gameHour, gameDay, gameMonth, gameYear, gameSeason);
+                EventHandler.CallGameMinuteEvent(gameMinute, gameHour,gameSeason,gameDay);
+                //åˆ‡æ¢ç¯å…‰
+                EventHandler.CallLightShiftChangeEvent(gameSeason, GetCurrentLightShift(), timeDifference);*/
         ISaveable saveable = this;
         saveable.RegisterSaveable();
-        gameClockPause= true;
+        gameClockPause = true;
     }
     private void Update()
     {
         if (!gameClockPause)
         {
-            //±àĞ´Ò»¸öÃëÕë¼ÆÊ±Æ÷
+            //ç¼–å†™ä¸€ä¸ªç§’é’ˆè®¡æ—¶å™¨
             tikTime += Time.deltaTime;
             if (tikTime >= Settings.secondThreshold)
             {
@@ -79,31 +79,31 @@ public class TimeManager : Singleton<TimeManager>,ISaveable
                 UpdateGameTime();
             }
         }
-        if (Input.GetKey(KeyCode.T))//×÷±×°´Å¥(Ê±¼ä¼Ó¿ì)
+        if (Input.GetKey(KeyCode.T))//ä½œå¼ŠæŒ‰é’®(æ—¶é—´åŠ å¿«)
         {
             for (int i = 0; i < 60; i++)
             {
                 UpdateGameTime();
             }
         }
-        if (Input.GetKeyDown(KeyCode.G))//×÷±×°´Å¥(ÌìÊıÔö¼Ó)
+        if (Input.GetKeyDown(KeyCode.G))//ä½œå¼ŠæŒ‰é’®(å¤©æ•°å¢åŠ )
         {
             gameDay++;
             EventHandler.CallGameDayEvent(gameDay, gameSeason);
             EventHandler.CallGameDateSeason(gameHour, gameDay, gameMonth, gameYear, gameSeason);
         }
     }
-    private void NewGameTime()//ĞÂ¿ªÒ»¾ÖÓÎÏ·Ê±¸øÓÎÏ·³õÊ¼»¯¸³Öµ
+    private void NewGameTime()//æ–°å¼€ä¸€å±€æ¸¸æˆæ—¶ç»™æ¸¸æˆåˆå§‹åŒ–èµ‹å€¼
     {
         gameSecond = 0;
         gameMinute = 0;
-        gameHour = 7;//´ÓÔçÉÏÆßµã¿ªÊ¼ÓÎÏ·
+        gameHour = 7;//ä»æ—©ä¸Šä¸ƒç‚¹å¼€å§‹æ¸¸æˆ
         gameDay = 1;
         gameMonth = 1;
         gameYear = 2022;
-        gameSeason = Season.´ºÌì;
+        gameSeason = Season.æ˜¥å¤©;
     }
-    private void UpdateGameTime()//¸üĞÂÓÎÏ·Ê±¼ä,Ãë·ÖÄêÔÂÈÕÒÀ´Îµİ½ø
+    private void UpdateGameTime()//æ›´æ–°æ¸¸æˆæ—¶é—´,ç§’åˆ†å¹´æœˆæ—¥ä¾æ¬¡é€’è¿›
     {
         gameSecond++;
         if (gameSecond > Settings.secondHold)
@@ -150,20 +150,20 @@ public class TimeManager : Singleton<TimeManager>,ISaveable
                                 gameYear = 2022;
                             }
                         }
-                        //ÓÃÀ´Ë¢ĞÂµØÍ¼ºÍÅ©×÷ÎïÉú³¤
+                        //ç”¨æ¥åˆ·æ–°åœ°å›¾å’Œå†œä½œç‰©ç”Ÿé•¿
                         EventHandler.CallGameDayEvent(gameDay, gameSeason);
                     }
                 }
-                //Ã¿Ê±¼äÖ´ĞĞµ½´ËÎ»ÖÃ£¬µ÷ÓÃÒ»ÏÂÎ¯ÍĞÊ±¼ä
-                EventHandler.CallGameDateSeason(gameHour, gameDay, gameMonth, gameYear, gameSeason); //ÕâÀïĞèÒªµ÷ÓÃÒ»ÏÂÎ¯ÍĞÊÂ¼ş
+                //æ¯æ—¶é—´æ‰§è¡Œåˆ°æ­¤ä½ç½®ï¼Œè°ƒç”¨ä¸€ä¸‹å§”æ‰˜æ—¶é—´
+                EventHandler.CallGameDateSeason(gameHour, gameDay, gameMonth, gameYear, gameSeason); //è¿™é‡Œéœ€è¦è°ƒç”¨ä¸€ä¸‹å§”æ‰˜äº‹ä»¶
             }
-            EventHandler.CallGameMinuteEvent(gameMinute, gameHour,gameSeason,gameDay);//ÕâÀïĞèÒªµ÷ÓÃÒ»ÏÂÎ¯ÍĞÊÂ¼ş
-            //ÇĞ»»µÆ¹â
+            EventHandler.CallGameMinuteEvent(gameMinute, gameHour, gameSeason, gameDay);//è¿™é‡Œéœ€è¦è°ƒç”¨ä¸€ä¸‹å§”æ‰˜äº‹ä»¶
+            //åˆ‡æ¢ç¯å…‰
             EventHandler.CallLightShiftChangeEvent(gameSeason, GetCurrentLightShift(), timeDifference);
         }
     }
     /// <summary>
-    /// ·µ»ØLightShiftÍ¬Ê±¼ÆËãÊ±¼ä²î
+    /// è¿”å›LightShiftåŒæ—¶è®¡ç®—æ—¶é—´å·®
     /// </summary>
     /// <returns></returns>
     private LightShift GetCurrentLightShift()

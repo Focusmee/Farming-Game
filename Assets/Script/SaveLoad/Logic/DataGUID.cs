@@ -1,5 +1,5 @@
 using UnityEngine;
-[ExecuteAlways]//´ú±í¸Ã½Å±¾ĞèÒªÒ»Ö±ÔËĞĞ
+[ExecuteAlways]//è®©è¿™ä¸ªè„šæœ¬éœ€è¦ä¸€ç›´è¿è¡Œ
 public class DataGUID : MonoBehaviour
 {
     public string guid;
@@ -7,7 +7,16 @@ public class DataGUID : MonoBehaviour
     {
         if (guid == string.Empty)
         {
-            guid = System.Guid.NewGuid().ToString();//Éú²úĞÂµÄGUID,GUID:ÊÇÒ»¸öÊ®ÁùÎ»µÄ×Ö·û´®ÇÒÊÇÎ¨Ò»ĞÔµÄ,ÓÃËüÀ´±£´æÃ¿Ò»¸öSaveableItem
+            GenerateNewGUID();
         }
+    }
+    
+    /// <summary>
+    /// å¼ºåˆ¶ç”Ÿæˆä¸€ä¸ªæ–°çš„GUID
+    /// </summary>
+    public void GenerateNewGUID()
+    {
+        guid = System.Guid.NewGuid().ToString();//ç”Ÿæˆæ–°çš„GUID,GUID:æ˜¯ä¸€ä¸ªåå…­ä½çš„å­—ç¬¦ä¸²ï¼Œå”¯ä¸€æ€§çš„,å¯ä»¥ä»£è¡¨ç€æ¯ä¸€ä¸ªSaveableItem
+        Debug.Log($"ç”Ÿæˆäº†æ–°çš„GUID: {guid}");
     }
 }

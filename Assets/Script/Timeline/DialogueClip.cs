@@ -3,15 +3,28 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.Timeline;
+using MFarm.Dialogue;
 
-public class DialogueClip : PlayableAsset/*¸Ä»ùÀà¿ÉÒÔÍê³ÉPlayableµÄÊµÀı»¯*/,ITimelineClipAsset//¸Ã½Ó¿Ú¿ÉÒÔÊµÏÖTimeline¼ô¼­µÄ¸ß¼¶¹¦ÄÜ
+[System.Serializable]
+public class DialogueClip : PlayableAsset/*Ä»PlayableÊµ*/,ITimelineClipAsset//Ã½Ó¿Ú¿ÊµTimelineÄ¸ß¼
 {
     public ClipCaps clipCaps => ClipCaps.None;
+    
+    [SerializeField]
     public DialogueBehaviour dialogue = new DialogueBehaviour();
+
+    // æ·»åŠ ä¸€ä¸ªåºåˆ—åŒ–å­—æ®µï¼Œç”¨äºåœ¨Inspectorä¸­è®¾ç½®å¯¹è¯å†…å®¹
+    [SerializeField]
+    private DialoguePiece dialoguePiece = new DialoguePiece();
 
     public override Playable CreatePlayable(PlayableGraph graph, GameObject owner)
     {
         var playable = ScriptPlayable<DialogueBehaviour>.Create(graph, dialogue);
+        
+        // å°†è®¾ç½®å¥½çš„å¯¹è¯å†…å®¹ä¼ é€’ç»™è¡Œä¸ºç±»
+        DialogueBehaviour clone = playable.GetBehaviour();
+        clone.dialoguePiece = dialoguePiece;
+        
         return playable;
     }
 }

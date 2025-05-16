@@ -7,14 +7,14 @@ namespace MFarm.Save
 {
     public class SaveLoadManager : Singleton<SaveLoadManager>
     {
-        private List<ISaveable> saveableList = new List<ISaveable>();//<ISaveable>ÊÇ½Ó¿Ú,´ú±í¸ÃÁĞ±íÖĞ¿ÉÒÔ´æ·ÅËùÓĞµ÷ÓÃÁËISaveable½Ó¿ÚµÄÀà
-        public List<DataSlot> dataSlots = new List<DataSlot>(new DataSlot[3]);//´æµµµÄÈı¸ö¸ñ×Ó
-        private string jsonFolder;//´æ·ÅJsonÎÄ¼şµÄÂ·¾¶
-        private int currentDataIndex;//µ±Ç°ÕıÔÚ½øĞĞµÄÓÎÏ·µÄ´æµµSlotµÄIndex
+        private List<ISaveable> saveableList = new List<ISaveable>();//<ISaveable>ï¿½Ç½Ó¿ï¿½,ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ğ±ï¿½ï¿½Ğ¿ï¿½ï¿½Ô´ï¿½ï¿½ï¿½ï¿½ï¿½Ğµï¿½ï¿½ï¿½ï¿½ï¿½ISaveableï¿½Ó¿Úµï¿½ï¿½ï¿½
+        public List<DataSlot> dataSlots = new List<DataSlot>(new DataSlot[3]);//ï¿½æµµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+        private string jsonFolder;//ï¿½ï¿½ï¿½Jsonï¿½Ä¼ï¿½ï¿½ï¿½Â·ï¿½ï¿½
+        private int currentDataIndex;//ï¿½ï¿½Ç°ï¿½ï¿½ï¿½Ú½ï¿½ï¿½Ğµï¿½ï¿½ï¿½Ï·ï¿½Ä´æµµSlotï¿½ï¿½Index
         protected override void Awake()
         {
             base.Awake();
-            jsonFolder = Application.persistentDataPath + "/SAVE DATA/";//´´½¨Ò»¸öÏµÍ³Â·¾¶ÏÂµÄÃûÎªSAVE DATAµÄÎÄ¼ş¼Ğ(¼ÓĞ±¸Ü±íÃ÷ÕâÊÇÎÄ¼ş¼Ğ,²»¼ÓĞ±¸Ü±íÃ÷ÊÇÎÄ¼ş)
+            jsonFolder = Application.persistentDataPath + "/SAVE DATA/";//ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ÏµÍ³Â·ï¿½ï¿½ï¿½Âµï¿½ï¿½ï¿½ÎªSAVE DATAï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½(ï¿½ï¿½Ğ±ï¿½Ü±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½,ï¿½ï¿½ï¿½ï¿½Ğ±ï¿½Ü±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½)
             ReadSaveData();
         }
         private void OnEnable()
@@ -52,6 +52,49 @@ namespace MFarm.Save
 
         public void RegisterSaveable(ISaveable saveable)
         {
+            // æ£€æŸ¥æ˜¯å¦å·²ç»æœ‰å…¶ä»–å¯¹è±¡ä½¿ç”¨ç›¸åŒçš„GUID
+            bool guidConflict = true;
+            int retryCount = 0;
+            const int maxRetries = 3; // æœ€å¤§é‡è¯•æ¬¡æ•°
+            
+            while (guidConflict && retryCount < maxRetries)
+            {
+                guidConflict = false;
+                foreach (var existingSaveable in saveableList)
+                {
+                    if (existingSaveable.GUID == saveable.GUID && existingSaveable != saveable)
+                    {
+                        guidConflict = true;
+                        retryCount++;
+                        
+                        Debug.LogWarning($"å‘ç°é‡å¤çš„GUID: {saveable.GUID}\n" +
+                                         $"å·²å­˜åœ¨å¯¹è±¡: {existingSaveable}\n" +
+                                         $"æ–°å¯¹è±¡: {saveable}\n" +
+                                         $"å°è¯•ç¬¬ {retryCount} æ¬¡è§£å†³");
+                        
+                        // å°è¯•è·å–DataGUIDç»„ä»¶å¹¶ç”Ÿæˆæ–°çš„GUID
+                        var dataGUID = (saveable as MonoBehaviour)?.GetComponent<DataGUID>();
+                        if (dataGUID != null)
+                        {
+                            dataGUID.GenerateNewGUID();
+                            Debug.Log($"ä¸ºå¯¹è±¡ {saveable} ç”Ÿæˆäº†æ–°çš„GUID: {saveable.GUID}");
+                            break; // é‡æ–°æ£€æŸ¥æ–°ç”Ÿæˆçš„GUID
+                        }
+                        else
+                        {
+                            Debug.LogError($"æ— æ³•ä¸ºå¯¹è±¡ {saveable} ç”Ÿæˆæ–°çš„GUIDï¼Œæœªæ‰¾åˆ°DataGUIDç»„ä»¶");
+                            return; // é¿å…æ·»åŠ æœ‰é‡å¤GUIDçš„å¯¹è±¡
+                        }
+                    }
+                }
+            }
+            
+            if (retryCount >= maxRetries && guidConflict)
+            {
+                Debug.LogError($"å¯¹è±¡ {saveable} çš„GUIDå†²çªç»è¿‡ {maxRetries} æ¬¡å°è¯•ä»æ— æ³•è§£å†³");
+                return;
+            }
+            
             if (!saveableList.Contains(saveable))
             {
                 saveableList.Add(saveable);
@@ -73,37 +116,76 @@ namespace MFarm.Save
                 }
             }
         }
-        private void Save(int index)//indexÓÃÀ´ÅĞ¶ÏÍæ¼Òµã»÷µÄÊÇÄÄÒ»¸ö´æµµ¸ñ×Ó
+        private void Save(int index)
         {
             DataSlot data = new DataSlot();
-            foreach (var saveable in saveableList)//saveableListÖĞÒÑ¾­´æ´¢ÁËÃ¿Ò»¸öµ÷ÓÃÁË<´æ´¢¼ÓÔØ>½Ó¿ÚµÄÀà
+            foreach (var saveable in saveableList)
             {
-                data.dataDict.Add(saveable.GUID, saveable.GenerateSaveData());//GenerateSaveData()º¯Êı½«»á·µ»ØÃ¿Ò»¸öÀàÖĞ´æ´¢µÄ²»Í¬µÄÊı¾İÎÄ¼şGameSaveData,²¢Í¨¹ı²»Í¬µÄGUID¸øËü´òÉÏ¼üÖµ
+                // u68c0u67e5GUIDu662fu5426u5df2u5b58u5728u4e8eu5b57u5178u4e2d
+                if (!data.dataDict.ContainsKey(saveable.GUID))
+                {
+                    data.dataDict.Add(saveable.GUID, saveable.GenerateSaveData());
+                }
+                else
+                {
+                    Debug.LogWarning("å‘ç°é‡å¤çš„GUID: " + saveable.GUID + "ï¼Œè·³è¿‡æ·»åŠ è¯¥é¡¹");
+                    // å¯é€‰ï¼šå¦‚æœæƒ³è¦æ›´æ–°è€Œä¸æ˜¯è·³è¿‡ï¼Œå¯ä»¥ä½¿ç”¨ä¸‹é¢çš„ä»£ç 
+                    // data.dataDict[saveable.GUID] = saveable.GenerateSaveData();
+                }
             }
             dataSlots[index] = data;
-            //´ËÊ±Ã¿Ò»¸öÀàµÄÓÎÏ·Êı¾İÎÄ¼şÎÒÃÇÒÑ¾­ÄÃµ½ÁË²¢ÇÒ¸øËüÃÇ´òÉÏµÄµÚÒ»ÎŞ¶şµÄGUID¼üÖµ
-            //ĞèÒª½«ÕâĞ©ËùÓĞÊı¾İ±£´æµ½±¾µØ,ĞèÒª×ª»¯ÎªJsonÊı¾İĞÎÊ½
-            //Éú³ÉÒ»¸ö×îÖÕÂ·¾¶µÄÎÄ¼ş
-            var resultPath = /*/*/jsonFolder/*Êµ¼ÊÕâÀïÊÇÓĞĞ±¸ÜµÄ,ËùÒÔÏµÍ³ÄÜ¹»ÅĞ¶ÏÄÄÀïÊÇÎÄ¼ş¼ĞÄÄÀïÊÇ´´½¨ÎÄ¼ş/*/ + "data" + index + ".json";
-            //½«DataSlotÊı¾İÎÄ¼ş×ª»¯ÎªStringÊı¾İÀàĞÍ(Formatting.Indented¿ÉÒÔÈÃ¿ª·¢Õß¸üºÃµÄ¹Û²ìÊı¾İ,Êµ¼Ê¿ª·¢ÖĞ²»ĞèÒªÌí¼Ó)
-            var jsonData = JsonConvert.SerializeObject(dataSlots[index], Formatting.Indented);//½«DataSlotÀàĞÍĞòÁĞ»¯ÎªStringÀàĞÍ
-            if (!File.Exists(resultPath))//Èç¹û×îÖÕÎÄ¼ş²»´æÔÚ
+            
+            var resultPath = jsonFolder + "data" + index + ".json";
+            var jsonData = JsonConvert.SerializeObject(dataSlots[index], Formatting.Indented);
+            if (!File.Exists(resultPath))
             {
-                Directory.CreateDirectory(jsonFolder);//´´½¨ÎÄ¼ş¼Ğ
+                Directory.CreateDirectory(jsonFolder);
             }
             Debug.Log("DATA" + index + "SAVED!");
-            File.WriteAllText(resultPath, jsonData);//½«jsonDataÊı¾İĞ´ÈëresultPathÎÄ¼şÖĞÈ¥,Êı¾İĞ´Èëºó¾Í×Ô¶¯´´½¨ÁËÎÄ¼ş
+            File.WriteAllText(resultPath, jsonData);
         }
         public void Load(int index)
         {
             currentDataIndex = index;
             var resultPath = jsonFolder + "data" + index + ".json";
-            var stringData = File.ReadAllText(resultPath);//¶ÁÈ¡×îÖÕÂ·¾¶ÎÄ¼şÖĞµÄÊı¾İ
-            var jsonData = JsonConvert.DeserializeObject<DataSlot>(stringData);//½«stringDataÖĞµÄÊı¾İ·´ĞòÁĞ»¯ÎªDataSlotÀàĞÍ
+            
+            if (!File.Exists(resultPath))
+            {
+                Debug.LogWarning($"å­˜æ¡£æ–‡ä»¶ä¸å­˜åœ¨: {resultPath}");
+                return;
+            }
+            
+            var stringData = File.ReadAllText(resultPath);
+            var jsonData = JsonConvert.DeserializeObject<DataSlot>(stringData);
+            
+            if (jsonData == null)
+            {
+                Debug.LogError($"æ— æ³•è§£æå­˜æ¡£æ•°æ®: {resultPath}");
+                return;
+            }
+            
             foreach (var saveable in saveableList)
             {
-                saveable.RestoreData(jsonData.dataDict[saveable.GUID]);//¼ÓÔØÊı¾İÎÄ¼ş
+                try
+                {
+                    // æ£€æŸ¥saveable.GUIDæ˜¯å¦å­˜åœ¨äºå­—å…¸ä¸­
+                    if (jsonData.dataDict.ContainsKey(saveable.GUID))
+                    {
+                        saveable.RestoreData(jsonData.dataDict[saveable.GUID]);
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"å­˜æ¡£ä¸­ä¸åŒ…å«å¯¹è±¡ {saveable} çš„æ•°æ®ï¼ŒGUID: {saveable.GUID}");
+                        // è¿™é‡Œå¯ä»¥æ·»åŠ é»˜è®¤å€¼æˆ–è·³è¿‡æ­¤å¯¹è±¡çš„æ¢å¤
+                    }
+                }
+                catch (System.Exception ex)
+                {
+                    Debug.LogError($"æ¢å¤å¯¹è±¡ {saveable} æ•°æ®æ—¶å‡ºé”™: {ex.Message}");
+                }
             }
+            
+            Debug.Log($"åŠ è½½å­˜æ¡£ {index} å®Œæˆ");
         }
     }
 }

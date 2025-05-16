@@ -14,6 +14,7 @@ namespace MFarm.Dialogue
         [SerializeField] private string npcPersonality = "热情、乐于助人";
         [SerializeField] private string npcBackground = "在这个小镇生活了很久，了解这里的一切。";
         [SerializeField, TextArea(3, 5)] private string promptTemplate = "你是一个名叫{0}的{1}，性格{2}。{3}请以友好的方式回应玩家的问题：\n{4}";
+        [SerializeField] private Sprite npcPortrait; // 添加NPC头像字段
         
         private DeepSeekClient deepSeekClient;
         private bool isWaitingForAIResponse = false;
@@ -37,7 +38,8 @@ namespace MFarm.Dialogue
             {
                 name = gameObject.name,
                 onLeft = false, // 根据UI布局调整
-                hasToPause = false
+                hasToPause = false,
+                faceImage = npcPortrait // 设置NPC头像
             };
         }
         
