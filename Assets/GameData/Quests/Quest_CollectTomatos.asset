@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f313c53d1a7b1ce4192ff61252f54474, type: 3}
+  m_Name: Quest_CollectTomatos
+  m_EditorClassIdentifier: 
+  questID: 1001
+  questName: "\"\u6536\u96C6\u756A\u8304\""
+  questDescription: "\"\u6536\u96C65\u4E2A\u82F9\u679C\u7ED9\u519C\u4EA7\u4E3B\u201D"
+  questType: 0
+  questStatus: 0
+  targetAmount: 5
+  targetItem:
+    itemID: 1001
+    itemName: "\u756A\u8304"
+    itemType: 0
+    itemIcon: {fileID: 21300000, guid: 829edba0aa42246a2a95e69096ea5862, type: 3}
+    itemOnWorldIcon: {fileID: 21300000, guid: 829edba0aa42246a2a95e69096ea5862, type: 3}
+    itemDescription: "\u4E00\u4E2A\u597D\u5403\u7684\u756A\u8304"
+    itemUseRadius: 0
+    canPickedUp: 1
+    canDropped: 1
+    canCarried: 1
+    itemPrice: 20
+    sellPercentage: 0
+  targetNPC: 
+  targetScene: 
+  targetPosition: {x: 0, y: 0}
+  rewardMoney: 20
+  rewardItems: []
+  requireLevel: 0
+  preQuests: []
+  currentAmount: 0

@@ -1,0 +1,47 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# 代码规范
+
+## 通用规范
+
+-   遵循 C# 编码约定。
+-   代码应清晰、可读且易于维护。
+-   使用有意义的变量名和函数名。
+
+## 注释规范
+
+-   **核心功能必须添加注释**：对于项目中的核心功能、复杂算法或关键逻辑，必须添加清晰的注释，解释其工作原理、目的和用法。
+-   公共API（public方法和属性）应有文档注释（XML文档注释）。
+-   对于非显而易见的逻辑，应添加注释说明。
+
+## 示例 (C#)
+
+```csharp
+/// <summary>
+/// 这是一个核心功能的示例方法。
+/// 它执行一项重要的计算。
+/// </summary>
+/// <param name="input">输入参数的描述。</param>
+/// <returns>返回值的描述。</returns>
+public int CoreFunctionExample(int input)
+{
+    // 核心逻辑开始
+    // 复杂的计算或关键步骤
+    int result = input * 2; // 这是一个示例计算
+    // 核心逻辑结束
+    return result;
+}
+
+// 非核心但复杂的逻辑也应有注释
+private void HelperFunctionWithComplexLogic()
+{
+    // 这段逻辑不容易一眼看懂，所以加注释解释
+    // ...
+}
+```
+
+请在编写和审查代码时遵守以上规范，以确保代码库的质量和可维护性。
+

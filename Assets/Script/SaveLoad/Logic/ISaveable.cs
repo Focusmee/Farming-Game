@@ -1,21 +1,68 @@
-//´´½¨Ò»¸ö½Ó¿ÚISaveable(½Ó¿Ú²»ĞèÒª¼Ì³ĞMonobehavier)
-//½Ó¿ÚÊÇinterfaceÀàĞÍ¶ø²»ÊÇclass
+//åˆ›å»ºä¸€ä¸ªæ¥å£ISaveable(æ¥å£ä¸éœ€è¦ç»§æ‰¿Monobehavier)
+//æ¥å£ç”¨interfaceæ¥åˆ›å»ºè€Œä¸æ˜¯class
+using UnityEngine;
+
 namespace MFarm.Save
 {
     public interface ISaveable
     {
-        //µ÷ÓÃISaveableµÄÀà¶¼±ØĞëÊµÏÖÒÔÏÂº¯Êı·½·¨
+        //æ‰€æœ‰ISaveableæ´¾ç”Ÿç±»éƒ½éœ€è¦å®ç°ä»¥ä¸‹å‡ ä¸ªå‡½æ•°ã€‚
 
-        string GUID { get; }//ÈÃÃ¿Ò»¸ö¼Ì³ĞISaveable½Ó¿ÚµÄÀà±ØĞëÒªÓĞÒ»¸öGUID
-        void RegisterSaveable()//µ±ÓĞÒ»¸öÀàµ÷ÓÃÁË¸Ã½Ó¿Ú,ÄÇÃ´µ÷ÓÃµÄµ±Ç°½Ó¿Ú¾Í»áÁ¢¼´´æ´¢µ½SaveLoadManagerÖĞµÄÁĞ±íÖĞÈ¥
+        string GUID { get; }//è®©æ¯ä¸€ä¸ªç»§æ‰¿ISaveableæ¥å£çš„ç±»éƒ½éœ€è¦æœ‰ä¸€ä¸ªGUID
+        void RegisterSaveable()//åˆ›å»ºä¸€ä¸ªæ–¹æ³•ï¼Œå½“æ¥å£è°ƒç”¨çš„å½“å‰æ¥å£å°±ä¼šè¢«è‡ªåŠ¨å­˜å‚¨åˆ°SaveLoadManagerä¸­çš„åˆ—è¡¨é‡Œå»
         {
             SaveLoadManager.Instance.RegisterSaveable(this);
         }
-        //Save¹¦ÄÜº¯Êı,·µ»ØÒ»¸öGameSaveDataÀà½«ÆäÊı¾İĞòÁĞ»¯±£´æµ½±¾µØ
-        GameSaveData GenerateSaveData();//³éÏóº¯Êı·½·¨,·µ»ØÖµÎªGameSaveData(¸Ãº¯ÊıÊÇÎªÁË´æ´¢Êı¾İ,½«ËùÓĞÊı¾İ´æ´¢½øÈ¥²¢·µ»ØÒ»¸ö·µ»ØÖµÎªGameSaveDataÀà)
+        //SaveåŠŸèƒ½å‡½æ•°,è¿”å›ä¸€ä¸ªGameSaveDataç±»å°†å„ç§æ•°æ®åºåˆ—åŒ–ä¿å­˜åˆ°ç£ç›˜
+        GameSaveData GenerateSaveData();//åˆ›å»ºæ–¹æ³•ï¼Œè¿”å›å€¼ä¸ºGameSaveData(è¯¥å‡½æ•°æ˜¯ä¸ºäº†å­˜å‚¨æ•°æ®,å°†å„ç§æ•°æ®å­˜å‚¨å‡ºå»ã€‚æ‰€ä»¥æœ‰ä¸€ä¸ªè¿”å›å€¼ä¸ºGameSaveDataã€‚)
 
-        //Load¹¦ÄÜº¯Êı,½«±£´æµÄĞòÁĞ»¯Êı¾İ¸³Öµ¸ø±¾µØ
-        void RestoreData(GameSaveData saveDate);//Ã»ÓĞ·µ»ØÖµµÄº¯Êı·½·¨,¸Ãº¯Êı·½·¨ÊÇÍ¨¹ı¶ÁÈ¡À´½«ËùÓĞÊı¾İÓÖ¸³ÖµÔÚÓÎÏ·ËùÓĞµÄ±äÁ¿ÉÏ
+        //LoadåŠŸèƒ½å‡½æ•°,å°†å„ç§åºåˆ—åŒ–æ•°æ®èµ‹å€¼å›æ¥ã€‚
+        void RestoreData(GameSaveData saveDate);//æ²¡æœ‰è¿”å›å€¼çš„å‡½æ•°ã€‚ã€‚ã€‚è¯¥å‡½æ•°æ˜¯å¯¹è¿‡é€šè¿‡è·å–å„ç§æ•°æ®æ¥æ¢å¤æ¸¸æˆä¸­çš„å˜é‡ã€‚
+    }
+    
+    /// <summary>
+    /// ISaveableçš„æ‰©å±•æ–¹æ³•ï¼Œæä¾›å®‰å…¨çš„GUIDè·å–åŠŸèƒ½
+    /// </summary>
+    public static class ISaveableExtensions
+    {
+        /// <summary>
+        /// å®‰å…¨åœ°è·å–æˆ–åˆ›å»ºDataGUIDç»„ä»¶
+        /// </summary>
+        /// <param name="saveable">å®ç°ISaveableæ¥å£çš„å¯¹è±¡</param>
+        /// <returns>DataGUIDç»„ä»¶ï¼Œå¦‚æœè·å–å¤±è´¥åˆ™è¿”å›null</returns>
+        public static DataGUID GetOrCreateDataGUID(this ISaveable saveable)
+        {
+            if (saveable is MonoBehaviour monoBehaviour)
+            {
+                var dataGUID = monoBehaviour.GetComponent<DataGUID>();
+                if (dataGUID == null)
+                {
+                    dataGUID = monoBehaviour.gameObject.AddComponent<DataGUID>();
+                    Debug.Log($"ä¸º {monoBehaviour.gameObject.name} è‡ªåŠ¨æ·»åŠ äº† DataGUID ç»„ä»¶");
+                }
+                return dataGUID;
+            }
+            return null;
+        }
+        
+        /// <summary>
+        /// å®‰å…¨åœ°è·å–GUIDï¼Œå¦‚æœDataGUIDç»„ä»¶ä¸å­˜åœ¨ä¼šè‡ªåŠ¨åˆ›å»º
+        /// </summary>
+        /// <param name="saveable">å®ç°ISaveableæ¥å£çš„å¯¹è±¡</param>
+        /// <returns>GUIDå­—ç¬¦ä¸²ï¼Œå¤±è´¥æ—¶è¿”å›ç©ºå­—ç¬¦ä¸²</returns>
+        public static string GetSafeGUID(this ISaveable saveable)
+        {
+            try
+            {
+                var dataGUID = saveable.GetOrCreateDataGUID();
+                return dataGUID?.guid ?? string.Empty;
+            }
+            catch (System.Exception ex)
+            {
+                Debug.LogError($"è·å–GUIDæ—¶å‘ç”Ÿé”™è¯¯: {ex.Message}");
+                return string.Empty;
+            }
+        }
     }
 }
 

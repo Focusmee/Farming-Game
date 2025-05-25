@@ -1,0 +1,36 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# 项目结构指南
+
+本项目是一个使用 Unity 开发的游戏。
+
+## 主要代码目录
+
+-   **`Assets/Script`**: 包含游戏的主要C#脚本。根据功能划分为以下子模块：
+    -   `Player`: 玩家相关逻辑，例如 [Assets/Script/Player/Player.cs](mdc:Assets/Script/Player/Player.cs) (如果存在)
+    -   `NPC`: 非玩家角色逻辑
+    -   `Inventory`: 库存系统
+    -   `Crop`: 作物和种植系统
+    -   `Dialogue`: 对话系统
+    -   `Map`: 地图和场景管理
+    -   `UI`: 用户界面逻辑
+    -   `AStar`: A*寻路算法实现
+    -   `BehaviorTree`: 行为树相关逻辑
+    -   `SaveLoad`: 保存和加载游戏进度
+    -   `Time`: 游戏内时间系统
+    -   其他模块如 `Audio`, `Cursor`, `Light`, `Menu`, `ObjectPool`, `Timeline`, `Transition`, `Utilities`。
+
+## 其他重要目录
+
+-   **`Assets/Prefabs`**: 存放预制件。
+-   **`Assets/Scenes`**: 存放游戏场景。
+-   **`Assets/Resources`**: 存放动态加载的资源。
+-   **`Assets/Sprites`**: (如果存在)存放2D图像资源。
+-   **`Assets/Animations`**: 存放动画文件。
+-   **`Assets/Tilemaps`**: 存放瓦片地图相关资源。
+
+请参考这些目录结构来理解和导航代码库。
+

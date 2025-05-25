@@ -1,0 +1,13 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!221 &22100000
+AnimatorOverrideController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: NPC_Girl_02_Tool_Water
+  m_Controller: {fileID: 9100000, guid: 2e4b7583e6981c346a16fd5b2b63871f, type: 2}
+  m_Clips:
+  - m_OriginalClip: {fileID: 7400000, guid: 500fefed8113b4f7e8f2dc728631a63d, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 219e4e77da0a442d782a4e4fae369e3e, type: 2}

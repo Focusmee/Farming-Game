@@ -4,22 +4,29 @@ using UnityEngine;
 namespace MFarm.Save
 {
     [System.Serializable]
-    //ÕâÖ»ÊÇÒ»¸ö´æ·ÅÊı¾İµÄÀà
-    public class GameSaveData//´´½¨Ò»¸öÀàÀ´¼ÇÂ¼ËùÓĞSaveÊ±ĞèÒª±£´æµÄÊı¾İÀ´±£´æµ½±¾µØÏÂ´ÎLoadÓÎÏ·Ê±Ö±½Ó½«¸ÃÀàÖĞËùÓĞÊı¾İÈ«²¿ÊäÈëÖÁÓÎÏ·ÖĞÈ¥
+    //è¿™åªæ˜¯ä¸€ä¸ªæ•°æ®å­˜å‚¨çš„ç±»
+    public class GameSaveData//åˆ›å»ºä¸€ä¸ªç±»æ¥è®°å½•æ‰€æœ‰Saveæ—¶éœ€è¦ä¿å­˜çš„æ•°æ®ï¼Œä¿å­˜åˆ°å­—å…¸ä¸Šï¼ŒLoadæ¸¸æˆæ—¶ç›´æ¥å°†å­—å…¸å†…çš„æ•°æ®å…¨éƒ¨è¿˜åŸåˆ°æ¸¸æˆé‡Œå»
     {
-        public string dataSceneName;//ĞèÒª±£´æ³¡¾°Ãû
-        public Dictionary<string, SerializableVector3> characterPosDict;//ÈËÎï×ø±êÊı¾İ(string:NPC»òÈËÎïµÄÃû×Ö)
-        public Dictionary<string, List<SceneItem>> sceneItemDict;//³¡¾°ÖĞµÄµÀ¾ßÊı¾İ
-        public Dictionary<string, List<SceneFurniture>> sceneFurnitureDict;//³¡¾°ÖĞµÄ¼Ò¾ßÊı¾İ
-        public Dictionary<string, TileDetails> tileDetailsDict;//³¡¾°ÖĞµÄÍßÆ¬ĞÅÏ¢ĞèÒª¼ÇÂ¼
-        public Dictionary<string, bool> firstLoadDict;//³¡¾°ÊÇ·ñµÚÒ»´Î¼ÓÔØÒ²ĞèÒª¼ÇÂ¼
-        public Dictionary<string, List<InventoryItem>> inventoryDict;//±³°üÖĞµÄÎïÆ·Êı¾İÒ²ĞèÒª±£´æ
-        public Dictionary<string, int> timeDict;//Ê±¼äÒ²ĞèÒª±£´æ
-        public int playerMoney;//Íæ¼ÒµÄÇ®ĞèÒª±£´æ
+        public string dataSceneName;//éœ€è¦ä¿å­˜åœºæ™¯å
+        public Dictionary<string, SerializableVector3> characterPosDict;//ä¿å­˜äººç‰©åæ ‡(string:NPCåï¼Œåæ ‡æ•°æ®)
+        public Dictionary<string, List<SceneItem>> sceneItemDict;//ä¿å­˜åœºæ™¯ä¸­çš„ç‰©å“æ•°æ®
+        public Dictionary<string, List<SceneFurniture>> sceneFurnitureDict;//ä¿å­˜åœºæ™¯ä¸­çš„å®¶å…·æ•°æ®
+        public Dictionary<string, TileDetails> tileDetailsDict;//ä¿å­˜åœºæ™¯ä¸­çš„ç“¦ç‰‡ä¿¡æ¯éœ€è¦è®°å½•
+        public Dictionary<string, bool> firstLoadDict;//ä¿å­˜æ˜¯å¦ç¬¬ä¸€æ¬¡åŠ è½½ä¹Ÿéœ€è¦è®°å½•
+        public Dictionary<string, List<InventoryItem>> inventoryDict;//ä¿å­˜åœºæ™¯ä¸­çš„ç‰©å“ï¼Œä¹Ÿéœ€è¦ä¿å­˜
+        public Dictionary<string, int> timeDict;//æ—¶é—´ä¹Ÿéœ€è¦ä¿å­˜
+        public int playerMoney;//ç©å®¶çš„é’±éœ€è¦ä¿å­˜
         //NPC
-        public string targetScene;//NPCµÄÄ¿±ê³¡¾°Ò²ĞèÒª±£´æ
-        public bool interactable;//NPCÊÇ·ñ¿ÉÒÔ»¥¶¯Ò²ĞèÒª±£´æ
-        public int animationInstanceID;//NPC¶¯»­²»ÄÜÖ±½ÓÊµÀı»¯±£´æÎªÊı¾İËùÓĞÍ¨¹ı¶¯»­IDÀ´±£´æ
+        public string targetScene;//NPCçš„ç›®æ ‡åœºæ™¯ä¹Ÿéœ€è¦ä¿å­˜
+        public bool interactable;//NPCæ˜¯å¦å¯å¯¹è¯ï¼Œä¹Ÿéœ€è¦ä¿å­˜
+        public int animationInstanceID;//NPCçš„åŠ¨ç”»ï¼Œé€šè¿‡å®ä¾‹åŒ–æ¥ä¿å­˜ï¼Œå› ä¸ºè¿™æ ·é€šè¿‡è¿™ä¸ªIDæ¥åŒºåˆ†
+
+        // ä»»åŠ¡ç³»ç»Ÿæ•°æ®
+        public Dictionary<string, QuestStatus> questStatusDict;    // ä»»åŠ¡çŠ¶æ€å­—å…¸
+        public Dictionary<string, int> questProgressDict;          // ä»»åŠ¡è¿›åº¦å­—å…¸
+        
+        // å¼€åœºåŠ¨ç”»ç›¸å…³æ•°æ®
+        public bool hasSeenIntro = false;   // æ ‡è®°ç©å®¶æ˜¯å¦å·²ç»çœ‹è¿‡å¼€åœºåŠ¨ç”»
     }
 }
 

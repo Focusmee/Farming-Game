@@ -7,14 +7,21 @@ namespace MFarm.Save
 {
     public class SaveLoadManager : Singleton<SaveLoadManager>
     {
-        private List<ISaveable> saveableList = new List<ISaveable>();//<ISaveable>�ǽӿ�,�������б��п��Դ�����е�����ISaveable�ӿڵ���
-        public List<DataSlot> dataSlots = new List<DataSlot>(new DataSlot[3]);//�浵����������
-        private string jsonFolder;//���Json�ļ���·��
-        private int currentDataIndex;//��ǰ���ڽ��е���Ϸ�Ĵ浵Slot��Index
+        private List<ISaveable> saveableList = new List<ISaveable>();//<ISaveable>是接口,这个数组列表中可以存储所有继承ISaveable接口的类
+        public List<DataSlot> dataSlots = new List<DataSlot>(new DataSlot[3]);//存档数据列表索引
+        private string jsonFolder;//存放Json文件的路径
+        private int currentDataIndex;//当前正在进行的游戏的存档Slot的Index
+        
+        /// <summary>
+        /// 标志是否正在加载已有存档（而不是开始新游戏）
+        /// </summary>
+        [System.NonSerialized]
+        public bool isLoadingExistingSave = false;
+        
         protected override void Awake()
         {
             base.Awake();
-            jsonFolder = Application.persistentDataPath + "/SAVE DATA/";//����һ��ϵͳ·���µ���ΪSAVE DATA���ļ���(��б�ܱ��������ļ���,����б�ܱ������ļ�)
+            jsonFolder = Application.persistentDataPath + "/SAVE DATA/";//创建一个系统路径下的命名为SAVE DATA的文件夹(不会被覆盖的文件夹,即便覆盖软件文件)
             ReadSaveData();
         }
         private void OnEnable()
@@ -52,6 +59,29 @@ namespace MFarm.Save
 
         public void RegisterSaveable(ISaveable saveable)
         {
+            if (saveable == null)
+            {
+                Debug.LogError("尝试注册空的ISaveable对象");
+                return;
+            }
+
+            string saveableGUID;
+            try
+            {
+                // 安全地获取GUID
+                saveableGUID = saveable.GUID;
+                if (string.IsNullOrEmpty(saveableGUID))
+                {
+                    Debug.LogError($"对象 {saveable} 的GUID为空，无法注册");
+                    return;
+                }
+            }
+            catch (System.Exception ex)
+            {
+                Debug.LogError($"获取对象 {saveable} 的GUID时发生错误: {ex.Message}");
+                return;
+            }
+
             // 检查是否已经有其他对象使用相同的GUID
             bool guidConflict = true;
             int retryCount = 0;
@@ -62,12 +92,23 @@ namespace MFarm.Save
                 guidConflict = false;
                 foreach (var existingSaveable in saveableList)
                 {
-                    if (existingSaveable.GUID == saveable.GUID && existingSaveable != saveable)
+                    string existingGUID;
+                    try
+                    {
+                        existingGUID = existingSaveable.GUID;
+                    }
+                    catch (System.Exception ex)
+                    {
+                        Debug.LogWarning($"获取已存在对象的GUID时出错: {ex.Message}，跳过该对象");
+                        continue;
+                    }
+
+                    if (existingGUID == saveableGUID && existingSaveable != saveable)
                     {
                         guidConflict = true;
                         retryCount++;
                         
-                        Debug.LogWarning($"发现重复的GUID: {saveable.GUID}\n" +
+                        Debug.LogWarning($"发现重复的GUID: {saveableGUID}\n" +
                                          $"已存在对象: {existingSaveable}\n" +
                                          $"新对象: {saveable}\n" +
                                          $"尝试第 {retryCount} 次解决");
@@ -77,8 +118,17 @@ namespace MFarm.Save
                         if (dataGUID != null)
                         {
                             dataGUID.GenerateNewGUID();
-                            Debug.Log($"为对象 {saveable} 生成了新的GUID: {saveable.GUID}");
-                            break; // 重新检查新生成的GUID
+                            try
+                            {
+                                saveableGUID = saveable.GUID; // 更新saveableGUID变量
+                                Debug.Log($"为对象 {saveable} 生成了新的GUID: {saveableGUID}");
+                                break; // 重新检查新生成的GUID
+                            }
+                            catch (System.Exception ex)
+                            {
+                                Debug.LogError($"生成新GUID后获取失败: {ex.Message}");
+                                return;
+                            }
                         }
                         else
                         {
@@ -98,6 +148,11 @@ namespace MFarm.Save
             if (!saveableList.Contains(saveable))
             {
                 saveableList.Add(saveable);
+                Debug.Log($"成功注册可保存对象: {saveable} (GUID: {saveableGUID})");
+            }
+            else
+            {
+                Debug.LogWarning($"对象 {saveable} 已经在可保存列表中");
             }
         }
         private void ReadSaveData()
@@ -121,7 +176,7 @@ namespace MFarm.Save
             DataSlot data = new DataSlot();
             foreach (var saveable in saveableList)
             {
-                // u68c0u67e5GUIDu662fu5426u5df2u5b58u5728u4e8eu5b57u5178u4e2d
+                // 检查GUID是否已存在于字典中
                 if (!data.dataDict.ContainsKey(saveable.GUID))
                 {
                     data.dataDict.Add(saveable.GUID, saveable.GenerateSaveData());
@@ -186,6 +241,33 @@ namespace MFarm.Save
             }
             
             Debug.Log($"加载存档 {index} 完成");
+            
+            // 如果是加载已有存档，触发加载场景而不是新游戏事件
+            if (isLoadingExistingSave)
+            {
+                // 直接切换到游戏状态，不触发新游戏事件
+                StartCoroutine(LoadGameAfterRestore());
+            }
+            else
+            {
+                // 如果是新游戏，触发新游戏事件
+                EventHandler.CallStartNewGameEvent(index);
+            }
+        }
+        
+        /// <summary>
+        /// 在恢复存档数据后加载游戏
+        /// </summary>
+        private IEnumerator LoadGameAfterRestore()
+        {
+            // 等待一帧确保所有数据恢复完成
+            yield return null;
+            
+            // 直接切换到游戏状态
+            EventHandler.CallUpdateGameStateEvent(GameState.Gameplay);
+            
+            // 重置标志
+            isLoadingExistingSave = false;
         }
     }
 }

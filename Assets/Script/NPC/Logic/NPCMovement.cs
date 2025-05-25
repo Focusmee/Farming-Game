@@ -295,6 +295,47 @@ public class NPCMovement : MonoBehaviour,ISaveable
             UpdateTimeOnPath();
         }
     }
+    
+    /// <summary>
+    /// 设置NPC移动路径
+    /// 用于耕种任务等外部系统控制NPC移动
+    /// </summary>
+    /// <param name="movementStack">移动步骤栈</param>
+    public void SetUpMovement(Stack<MovementStep> movementStack)
+    {
+        movementSteps.Clear();
+        
+        // 复制移动步骤到NPC的移动栈中
+        Stack<MovementStep> tempStack = new Stack<MovementStep>();
+        while (movementStack.Count > 0)
+        {
+            tempStack.Push(movementStack.Pop());
+        }
+        
+        while (tempStack.Count > 0)
+        {
+            MovementStep step = tempStack.Pop();
+            movementSteps.Push(step);
+            movementStack.Push(step); // 保持原栈不变
+        }
+        
+        Debug.Log($"NPC {gameObject.name} 设置移动路径，步数: {movementSteps.Count}");
+    }
+    
+    /// <summary>
+    /// 停止NPC移动
+    /// </summary>
+    public void StopMovement()
+    {
+        npcMove = false;
+        if (npcMoveRoutine != null)
+        {
+            StopCoroutine(npcMoveRoutine);
+            npcMoveRoutine = null;
+        }
+        movementSteps.Clear();
+        Debug.Log($"NPC {gameObject.name} 停止移动");
+    }
     /// <summary>
     /// ����NPCÿ��һ����ʱ���
     /// </summary>

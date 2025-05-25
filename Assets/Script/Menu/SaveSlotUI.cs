@@ -9,12 +9,12 @@ public class SaveSlotUI : MonoBehaviour
     public Text dataTime, dataScene;
     private Button currentButton;
     private DataSlot currentData;
-    private int index => transform.GetSiblingIndex();//µÃµ½µ±Ç°objectÔÚÍ¬²ã¼¶HierarchyÖĞµÄÎ»ÖÃË÷Òı
+    private int index => transform.GetSiblingIndex();//å¾—åˆ°å½“å‰objectåœ¨åŒçº§Hierarchyä¸­çš„ä½ç½®ç´¢å¼•
     private void Awake()
     {
         currentButton = GetComponent<Button>();
-        currentButton.onClick.AddListener(LoadGameData);//Îªµ±Ç°°´Å¥Ìí¼Ó¼àÌıµã»÷ÊÂ¼ş
-        //Èç¹ûµã»÷ÁËµ±Ç°°´Å¥¾Íµ÷ÓÃ(LoadGameData)º¯Êı
+        currentButton.onClick.AddListener(LoadGameData);//ä¸ºå½“å‰æŒ‰é’®æ·»åŠ ç›‘å¬äº‹ä»¶
+        //è¿™é‡Œè¡¨ç¤ºå½“å‰æŒ‰é’®ä¸è°ƒç”¨(LoadGameData)ç»‘å®š
     }
     private void OnEnable()
     {
@@ -30,19 +30,24 @@ public class SaveSlotUI : MonoBehaviour
         }
         else
         {
-            dataTime.text = "Õâ¸öÊÀ½ç»¹Ã»ÓĞ¿ªÊ¼";
-            dataScene.text = "ÃÎ»¹Ã»¿ªÊ¼";
+            dataTime.text = "ç©ºå­˜æ¡£è¿˜æ²¡æœ‰å¼€å§‹";
+            dataScene.text = "æ–°æ¸¸æˆè¿˜æœªå¼€å§‹";
         }
     }
     private void LoadGameData()
     {
         if (currentData != null)
         {
+            // åŠ è½½å­˜æ¡£ - è®¾ç½®æ ‡å¿—è¡¨ç¤ºè¿™æ˜¯åŠ è½½æ—§å­˜æ¡£
+            Debug.Log("åŠ è½½å­˜æ¡£ " + index);
+            SaveLoadManager.Instance.isLoadingExistingSave = true;
             SaveLoadManager.Instance.Load(index);
         }
         else
         {
-            Debug.Log("ĞÂÓÎÏ·");
+            // å¼€å§‹æ–°æ¸¸æˆ - æ¸…é™¤æ ‡å¿—
+            Debug.Log("æ–°æ¸¸æˆ");
+            SaveLoadManager.Instance.isLoadingExistingSave = false;
             EventHandler.CallStartNewGameEvent(index);
         }
     }

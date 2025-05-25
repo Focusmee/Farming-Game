@@ -99,8 +99,8 @@ public class TimeManager : Singleton<TimeManager>, ISaveable
         gameMinute = 0;
         gameHour = 7;//从早上七点开始游戏
         gameDay = 1;
-        gameMonth = 1;
-        gameYear = 2022;
+        gameMonth = 3;
+        gameYear = 2025;
         gameSeason = Season.春天;
     }
     private void UpdateGameTime()//更新游戏时间,秒分年月日依次递进

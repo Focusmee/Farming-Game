@@ -180,4 +180,23 @@ public static class EventHandler //����һ���ű�������
     {
         UpdateAIApiKeyEvent?.Invoke(apiKey);
     }
+
+    // 任务系统相关事件
+    public static event Action<QuestData_SO> QuestStateChangeEvent;
+    public static void CallQuestStateChangeEvent(QuestData_SO quest)
+    {
+        QuestStateChangeEvent?.Invoke(quest);
+    }
+
+    public static event Action<QuestData_SO, int> QuestProgressEvent;
+    public static void CallQuestProgressEvent(QuestData_SO quest, int progress)
+    {
+        QuestProgressEvent?.Invoke(quest, progress);
+    }
+
+    public static event Action<QuestData_SO> QuestCompleteEvent;
+    public static void CallQuestCompleteEvent(QuestData_SO quest)
+    {
+        QuestCompleteEvent?.Invoke(quest);
+    }
 }
