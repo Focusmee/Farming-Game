@@ -269,6 +269,42 @@ namespace MFarm.Save
             // 重置标志
             isLoadingExistingSave = false;
         }
+
+        /// <summary>
+        /// 获取存档文件夹路径（调试用）
+        /// </summary>
+        [ContextMenu("显示存档路径")]
+        public void ShowSaveDataPath()
+        {
+            Debug.Log($"存档文件夹路径: {jsonFolder}");
+            Debug.Log($"完整路径: {System.IO.Path.GetFullPath(jsonFolder)}");
+            
+            // 检查文件夹是否存在
+            if (System.IO.Directory.Exists(jsonFolder))
+            {
+                Debug.Log("存档文件夹存在");
+                
+                // 列出所有存档文件
+                string[] files = System.IO.Directory.GetFiles(jsonFolder, "*.json");
+                Debug.Log($"找到 {files.Length} 个存档文件:");
+                foreach (string file in files)
+                {
+                    Debug.Log($"  - {System.IO.Path.GetFileName(file)}");
+                }
+            }
+            else
+            {
+                Debug.Log("存档文件夹不存在");
+            }
+            
+            // 在Windows资源管理器中打开文件夹（仅Windows）
+            #if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
+            if (System.IO.Directory.Exists(jsonFolder))
+            {
+                System.Diagnostics.Process.Start("explorer.exe", jsonFolder.Replace("/", "\\"));
+            }
+            #endif
+        }
     }
 }
 

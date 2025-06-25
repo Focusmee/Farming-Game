@@ -3369,6 +3369,57 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 652593186}
   m_CullTransparentMesh: 1
+--- !u!1 &681047335
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 681047337}
+  - component: {fileID: 681047336}
+  m_Layer: 0
+  m_Name: TreeChopChecker
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &681047336
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 681047335}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 085377d54031dbb4488928a7e7e86767, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  showGizmosInScene: 1
+  logDetailedInfo: 1
+  checkRadius: 20
+  axeToolID: 1001
+  choppableColor: {r: 0, g: 1, b: 0, a: 1}
+  nonChoppableColor: {r: 1, g: 0, b: 0, a: 1}
+  immatureColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+--- !u!4 &681047337
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 681047335}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &699264511
 GameObject:
   m_ObjectHideFlags: 0
@@ -3485,14 +3536,18 @@ MonoBehaviour:
     seedName: "\u9A6C\u94C3\u85AF\u79CD\u5B50"
     priority: 8
     preferredSeason: 0
-  - seedID: 1003
-    seedName: "\u751C\u83DC\u6839\u79CD\u5B50"
+  - seedID: 1008
+    seedName: "\u8461\u8404\u79CD\u5B50"
+    priority: 8
+    preferredSeason: 1
+  - seedID: 1009
+    seedName: "\u5357\u74DC\u79CD\u5B50"
+    priority: 8
+    preferredSeason: 2
+  - seedID: 1006
+    seedName: "\u84DD\u8393\u79CD\u5B50"
     priority: 7
-    preferredSeason: 0
-  - seedID: 1004
-    seedName: "\u767D\u841D\u535C\u79CD\u5B50"
-    priority: 6
-    preferredSeason: 0
+    preferredSeason: 2
 --- !u!4 &727908715
 Transform:
   m_ObjectHideFlags: 0
@@ -3998,7 +4053,7 @@ MonoBehaviour:
   npcPersonality: "\u70ED\u60C5\u3001\u4E50\u4E8E\u52A9\u4EBA"
   npcBackground: "\u5728\u8FD9\u4E2A\u5C0F\u9547\u751F\u6D3B\u4E86\u5F88\u4E45\uFF0C\u4E86\u89E3\u8FD9\u91CC\u7684\u4E00\u5207\u3002"
   promptTemplate: "\u4F60\u662F\u4E00\u4E2A\u540D\u53EB{0}\u7684{1}\uFF0C\u6027\u683C{2}\u3002{3}\u8BF7\u4EE5\u53CB\u597D\u7684\u65B9\u5F0F\u56DE\u5E94\u73A9\u5BB6\u7684\u95EE\u9898\uFF1A\n{4}"
-  npcPortrait: {fileID: 0}
+  npcPortrait: {fileID: 21300000, guid: 67d354b9f685e4e1b90255eb84bc5abe, type: 3}
 --- !u!1 &811948467
 GameObject:
   m_ObjectHideFlags: 0
@@ -8896,6 +8951,53 @@ Transform:
   - {fileID: 1777619836}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2200000000
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2200000001}
+  - component: {fileID: 2200000002}
+  m_Layer: 0
+  m_Name: SceneSwitcher
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2200000001
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2200000000}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2200000002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2200000000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 90035b13319657f44a22e47446a069cf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetSceneName: 06.TwilightForest
+  switchKey: 286
+  refreshKey: 287
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -8922,3 +9024,5 @@ SceneRoots:
   - {fileID: 1207157224}
   - {fileID: 1028238313}
   - {fileID: 727908715}
+  - {fileID: 681047337}
+  - {fileID: 2200000001}

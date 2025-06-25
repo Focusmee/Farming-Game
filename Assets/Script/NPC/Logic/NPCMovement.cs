@@ -10,17 +10,17 @@ using MFarm.Save;
 public class NPCMovement : MonoBehaviour,ISaveable
 {
     public SchedulDataList_SO schedulData;
-    private SortedSet<SchedulDetails> scheduleSet;//ʼ�ձ����������ݵ�����˳���Լ�Ψһ�Եļ���
+    private SortedSet<SchedulDetails> scheduleSet;//ʼձݵ˳ԼΨһ�Եļ���
     private SchedulDetails currentSchedule;
-    //��ʱ�洢��Ϣ
+    //ʱ洢Ϣ
     [SerializeField]private string currentScene;
     private string targetScene;
-    private Vector3Int currentGridPostion;//��ǰ����λ��
-    private Vector3Int targetGridPostion;//Ŀ������λ��
-    private Vector3Int nextGridPosition;//��һ������λ������
-    private Vector3 nextWorldPosition;//��һ������������
-    public string StartScene { set => currentScene = value; }//NPC��һ��ʼ���ڵĳ���
-    [Header("�ƶ�����")]
+    private Vector3Int currentGridPostion;//ǰλ
+    private Vector3Int targetGridPostion;//Ŀ����λ
+    private Vector3Int nextGridPosition;//һλ
+    private Vector3 nextWorldPosition;//һ
+    public string StartScene { set => currentScene = value; }//NPCһʼڵĳ
+    [Header("ƶ")]
     public float normalSpeed = 2f;
     private float minSpeed = 1;
     private float maxSpeed = 3;
@@ -33,39 +33,70 @@ public class NPCMovement : MonoBehaviour,ISaveable
     private Animator anim;
     private Grid grid;
     private Stack<MovementStep> movementSteps;
-    private Coroutine npcMoveRoutine;//NPC�ƶ���һ��Э�̽�����Ϊ��������
-    private bool isInitialised;//�ж�NPC�Ƿ��ǵ�һ�μ���
-    private bool npcMove;//�ж�NPC�Ƿ��ƶ�
-    private bool sceneLoaded;//�жϳ����Ƿ�������
-    public bool interactable;//�Ƿ���Ի���
+    private Coroutine npcMoveRoutine;//NPCƶһЭ̽Ϊ
+    private bool isInitialised;//жNPCǷһμ
+    private bool npcMove;//жNPCǷƶ
+    private bool sceneLoaded;//жϳǷ
+    public bool interactable;//ǷԻ
     public bool isFirstLoad;
     private Season currentSeason;
-    private float animationBreakTime;//������ʱ��
+    private float animationBreakTime;//ʱ
     private bool canPlayStopAnimation;
     private AnimationClip stopAnimationClip;
-    public AnimationClip blankAnimationClip;//����һ���հ׵Ķ���Ƭ��
-    private AnimatorOverrideController animOverride;//�ع�һ������������
-    private TimeSpan GameTime => TimeManager.Instance.GameTime;//TimeSpan:��ʾһ��ʱ���
+    public AnimationClip blankAnimationClip;//һհ׵ĶƬ
+    private AnimatorOverrideController animOverride;//عһ
+    private TimeSpan GameTime => TimeManager.Instance.GameTime;//TimeSpan:ʾһʱ
 
     public string GUID => GetComponent<DataGUID>().guid;
 
-    //����:����,����һ��ʱ��� TimeSpan targetTime = new TimeSpan(10,20); ���ʱ�������10��20��
-    //ӵ��ʱ���֮���������ʱ�����Ϊ����,����GameTime��Ϸʱ�䵽��10��20��ʱ�ܹ�����ʲô�¼�
+    //:,һʱ TimeSpan targetTime = new TimeSpan(10,20); ʱ1020
+    //ӵʱ֮ʱΪ,GameTimeϷʱ䵽1020ʱܹʲô¼
 
     private void Awake()
     {
+        // 获取必要的组件
         rb = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         coll = GetComponent<BoxCollider2D>();
         anim = GetComponent<Animator>();
+        
+        // 验证组件是否成功获取
+        if (rb == null)
+            Debug.LogError($"NPC {gameObject.name}: 缺少Rigidbody2D组件");
+        if (spriteRenderer == null)
+            Debug.LogError($"NPC {gameObject.name}: 缺少SpriteRenderer组件");
+        if (coll == null)
+            Debug.LogError($"NPC {gameObject.name}: 缺少BoxCollider2D组件");
+        if (anim == null)
+            Debug.LogError($"NPC {gameObject.name}: 缺少Animator组件");
+        
+        // 初始化移动步骤栈
         movementSteps = new Stack<MovementStep>();
-        animOverride = new AnimatorOverrideController(anim.runtimeAnimatorController);
-        anim.runtimeAnimatorController = animOverride;
-        //runtimeAnimatorController:AnimatorController������ʱ��ʾ.ʹ�ô˱�ʾ��������ʱ�ڼ����AnimatorController��
-        scheduleSet = new SortedSet<SchedulDetails>();
-        foreach (var schedule in schedulData.schedulList)
+        
+        // 初始化动画控制器
+        if (anim != null && anim.runtimeAnimatorController != null)
         {
-            scheduleSet.Add(schedule);
+            animOverride = new AnimatorOverrideController(anim.runtimeAnimatorController);
+            anim.runtimeAnimatorController = animOverride;
+        }
+        else
+        {
+            Debug.LogWarning($"NPC {gameObject.name}: Animator或RuntimeAnimatorController为null，无法初始化动画覆盖控制器");
+        }
+        
+        // 初始化调度集合
+        scheduleSet = new SortedSet<SchedulDetails>();
+        if (schedulData != null && schedulData.schedulList != null)
+        {
+            foreach (var schedule in schedulData.schedulList)
+            {
+                if (schedule != null)
+                    scheduleSet.Add(schedule);
+            }
+        }
+        else
+        {
+            Debug.LogWarning($"NPC {gameObject.name}: schedulData或schedulList为null，无法初始化调度数据");
         }
     }
     private void Start()
@@ -110,13 +141,13 @@ public class NPCMovement : MonoBehaviour,ISaveable
     {
         if (sceneLoaded)
             SwitchAnimation();
-        //��ʱ��
+        //ʱ
         animationBreakTime -= Time.deltaTime;
         canPlayStopAnimation = animationBreakTime <= 0;
     }
     private void FixedUpdate()
     {
-        if (sceneLoaded)//������������˲ſ�����NPC�ƶ�
+        if (sceneLoaded)//˲ſNPCƶ
         {
             Movement();
         }
@@ -129,10 +160,18 @@ public class NPCMovement : MonoBehaviour,ISaveable
     private void OnAfterSceneLoadedEvent()
     {
         grid = FindObjectOfType<Grid>();
+        
+        // 检查grid是否成功找到
+        if (grid == null)
+        {
+            Debug.LogError($"NPC {gameObject.name}: 场景中未找到Grid组件，NPC移动功能将无法正常工作");
+            return;
+        }
+        
         CheckVisiable();
         if (!isInitialised)
         {
-            InitNPC();//��һ�μ��صĻ��ͳ�ʼ��NPC
+            InitNPC();//第一次加载的话就初始化NPC
             isInitialised = true;
         }
         sceneLoaded = true;
@@ -178,27 +217,44 @@ public class NPCMovement : MonoBehaviour,ISaveable
     }
     private void InitNPC()
     {
-        targetScene = currentScene;//��ʼ��Ŀ�곡�����ǵ�ǰ����
-        //�����ڵ�ǰ������������ĵ�
-        currentGridPostion = grid.WorldToCell(transform.position);//��������ת��Ϊ��������
+        // 检查grid是否可用
+        if (grid == null)
+        {
+            Debug.LogError($"NPC {gameObject.name}: Grid为null，无法初始化NPC位置");
+            return;
+        }
+        
+        targetScene = currentScene;//初始化目标场景就是当前场景
+        //保证在当前场景坐标正确的点
+        currentGridPostion = grid.WorldToCell(transform.position);//世界坐标转换为网格坐标
         transform.position = new Vector3(currentGridPostion.x + Settings.gridCellSize / 2f, currentGridPostion.y + Settings.gridCellSize / 2f, 0);
         targetGridPostion = currentGridPostion;
     }
     /// <summary>
-    /// ��Ҫ�ƶ�����
+    /// 核心移动方法
     /// </summary>
     private void Movement()
     {
         if (!npcMove)
         {
-            if (movementSteps.Count>0)//�ж��ƶ�·����ջ���Ƿ��й����õĲ���·��
+            // 添加空引用检查
+            if (movementSteps != null && movementSteps.Count > 0)//判断移动路径栈是否有可用的步骤路径
             {
-                MovementStep step = movementSteps.Pop();//�õ���ջ�еĵ�һ�����ҴӶ�ջ���Ƴ���
-                currentScene = step.sceneName;//��ǰ�������ڲ����д�ŵĳ���
-                CheckVisiable();//ʵʱ���NPC�Ƿ�ɼ�
-                nextGridPosition = (Vector3Int)step.gridCoordinate;
-                TimeSpan stepTime = new TimeSpan(step.hour, step.minute, step.second);//�õ���һ����ʱ���
-                MoveToGridPosition(nextGridPosition, stepTime);
+                MovementStep step = movementSteps.Pop();//得到栈中的第一个并从栈中移除
+                
+                // 检查step是否为null
+                if (step != null)
+                {
+                    currentScene = step.sceneName;//当前场景存储步骤中存储的场景
+                    CheckVisiable();//实时检查NPC是否可见
+                    nextGridPosition = (Vector3Int)step.gridCoordinate;
+                    TimeSpan stepTime = new TimeSpan(step.hour, step.minute, step.second);//得到下一步的时间
+                    MoveToGridPosition(nextGridPosition, stepTime);
+                }
+                else
+                {
+                    Debug.LogWarning($"NPC {gameObject.name}: MovementStep为null，跳过此步骤");
+                }
             }
             else if (!isMoving && canPlayStopAnimation)
             {
@@ -210,33 +266,33 @@ public class NPCMovement : MonoBehaviour,ISaveable
     {
         npcMoveRoutine = StartCoroutine(MoveRoutine(gridPos, stepTime));
     }
-    //��ΪNPC���ƶ�����������(�Լ��ڳ������Լ������Լ��ƶ�)����Ҫ��Э�̸���
+    //ΪNPCƶ(ԼڳԼƶ)ҪЭ̸
     private IEnumerator MoveRoutine(Vector3Int gridPos,TimeSpan stepTime)
     {
-        npcMove = true;//NPC�ƶ�״̬��Ϊtrue
+        npcMove = true;//NPCƶ״̬Ϊtrue
         nextWorldPosition = GetWorldPosition(gridPos);
-        if (stepTime > GameTime)//�����Ϸʱ�仹û����ǰ����һ����ʱ���
+        if (stepTime > GameTime)//Ϸʱ仹ûǰһʱ
         {
-            //��ȡ�����ƶ���ʱ���,����Ϊ��λ
+            //ȡƶʱ,Ϊλ
             float timeToMove = (float)(stepTime.TotalSeconds - GameTime.TotalSeconds);
-            //ʵ���ƶ�����
+            //ʵƶ
             float distance = Vector3.Distance(transform.position, nextWorldPosition);
-            //����NPC��ʵ���ƶ��ٶ�
-            float speed = Mathf.Max(minSpeed, (distance / timeToMove / Settings.secondThreshold));//����Сֵ���Ƚ���Ϊ��ȷ���ٶȲ��������Сֵ
-            //�ٶ�=����/ʱ��(m/s)
+            //NPCʵƶٶ
+            float speed = Mathf.Max(minSpeed, (distance / timeToMove / Settings.secondThreshold));//СֵȽΪȷٶȲСֵ
+            //ٶ=/ʱ(m/s)
 
-            if (speed <= maxSpeed)//ͬ�����ܴ�������ƶ��ٶ�
+            if (speed <= maxSpeed)//ܴͬƶٶ
             {
-                while (Vector3.Distance(transform.position, nextWorldPosition) > Settings.pixelSize)//���NPC��ǰ�������һ��Ҫ����ľ��뻹����һ�����ص�˵����û���ߵ�
+                while (Vector3.Distance(transform.position, nextWorldPosition) > Settings.pixelSize)//NPCǰһҪľ뻹һص˵ûߵ
                 {
-                    dir = (nextWorldPosition - transform.position).normalized;//NPC�ƶ�����
-                    Vector2 posOffset = new Vector2(dir.x * speed * Time.fixedDeltaTime, dir.y * speed * Time.fixedDeltaTime);//�ƶ�ƫ��
-                    rb.MovePosition(rb.position + posOffset);//�ƶ����嵽ĳ��λ��
-                    yield return new WaitForFixedUpdate();//�ȴ�һС���
+                    dir = (nextWorldPosition - transform.position).normalized;//NPCƶ
+                    Vector2 posOffset = new Vector2(dir.x * speed * Time.fixedDeltaTime, dir.y * speed * Time.fixedDeltaTime);//ƶƫ
+                    rb.MovePosition(rb.position + posOffset);//ƶ嵽ĳλ
+                    yield return new WaitForFixedUpdate();//ȴһС
                 }
             }
         }
-        //���ʱ���Ѿ����˾�˲��
+        //ʱѾ˾˲
         rb.position = nextWorldPosition;
         currentGridPostion = gridPos;
         nextGridPosition = currentGridPostion;
@@ -244,18 +300,18 @@ public class NPCMovement : MonoBehaviour,ISaveable
         npcMove = false;
     }
     /// <summary>
-    /// ����Scheduleʱ�������·��
+    /// Scheduleʱ·
     /// </summary>
     /// <param name="schedule"></param>
     public void BuildPath(SchedulDetails schedule)
     {
-        movementSteps.Clear();//����֮ǰ��ջ�е�·��
+        movementSteps.Clear();//֮ǰջе·
         currentSchedule = schedule;
         targetScene = schedule.targetScene;
         targetGridPostion = (Vector3Int)schedule.targetGridPosition;
         stopAnimationClip = schedule.clipAtStop;
         this.interactable = schedule.interactable;
-        if (schedule.targetScene == currentScene)//���Ŀ�곡������ڵ�ǰ����,������AStar��ʼ�������·��
+        if (schedule.targetScene == currentScene)//Ŀ곡ڵǰ,AStarʼ·
         {
             AStar.Instance.BuildPath(schedule.targetScene, (Vector2Int)currentGridPostion, schedule.targetGridPosition, movementSteps);
         }
@@ -289,9 +345,9 @@ public class NPCMovement : MonoBehaviour,ISaveable
             }
         }
 
-        if (movementSteps.Count > 1)//·������1���������ƶ���
+        if (movementSteps.Count > 1)//·����1ƶ
         {
-            //����ÿһ����ʱ��ʱ���
+            //ÿһʱʱ
             UpdateTimeOnPath();
         }
     }
@@ -337,7 +393,7 @@ public class NPCMovement : MonoBehaviour,ISaveable
         Debug.Log($"NPC {gameObject.name} 停止移动");
     }
     /// <summary>
-    /// ����NPCÿ��һ����ʱ���
+    /// NPCÿһһʱ
     /// </summary>
     private void UpdateTimeOnPath()
     {
@@ -345,31 +401,31 @@ public class NPCMovement : MonoBehaviour,ISaveable
 
         TimeSpan currentGameTime = GameTime;
 
-        foreach (MovementStep step in movementSteps)//����AStar�㷨�Ѿ��������˶�ջ,��������ÿһ������
+        foreach (MovementStep step in movementSteps)//AStar㷨Ѿ˶ջ,ÿһ
         {
-            if (previousSetp == null)//��Ϸһ��ʼNPCû����һ��,����ֱ�ӽ���һ�����ݸ�����
+            if (previousSetp == null)//ϷһʼNPCûһ,ֱӽһݸ
                 previousSetp = step;
 
             step.hour = currentGameTime.Hours;
             step.minute = currentGameTime.Minutes;
-            step.second = currentGameTime.Seconds;//��¼��ǰ����Ϸʱ���
+            step.second = currentGameTime.Seconds;//¼ǰϷʱ
 
-            TimeSpan gridMovementStepTime;//����һ���µ�ʱ�������ȡ�ߵ�ÿһ����ʱ���
+            TimeSpan gridMovementStepTime;//һµʱȡߵÿһʱ
 
-            if (MoveInDiagonal(step, previousSetp))//�ж��Ƿ���б�����ƶ�,б�����ƶ���ֱ��������Ҫ��ʱ�������ͬ
+            if (MoveInDiagonal(step, previousSetp))//жǷбƶ,бƶֱҪʱͬ
                 gridMovementStepTime = new TimeSpan(0, 0, (int)(Settings.gridCellDiagonalSize / normalSpeed / Settings.secondThreshold));
             else
                 gridMovementStepTime = new TimeSpan(0, 0, (int)(Settings.gridCellSize / normalSpeed / Settings.secondThreshold));
 
-            //�ۼӻ����һ����ʱ���
-            currentGameTime = currentGameTime.Add(gridMovementStepTime);//��Ϸʱ�������·ʱ����ۼ������γ�һ��ʱ�������
-            //ѭ����һ���˲���Ϊ����
+            //ۼӻһʱ
+            currentGameTime = currentGameTime.Add(gridMovementStepTime);//Ϸʱ·ʱۼγһʱ
+            //ѭһ˲Ϊ
             previousSetp = step;
         }
     }
 
     /// <summary>
-    /// �ж��Ƿ���б����
+    /// жǷб
     /// </summary>
     /// <param name="currentStep"></param>
     /// <param name="previousStep"></param>
@@ -379,12 +435,19 @@ public class NPCMovement : MonoBehaviour,ISaveable
         return (currentStep.gridCoordinate.x != previousStep.gridCoordinate.x) && (currentStep.gridCoordinate.y != previousStep.gridCoordinate.y);
     }
     /// <summary>
-    /// �õ��������ĵ���������
+    /// 得到网格坐标的世界坐标
     /// </summary>
-    /// <param name="gridPos">��������</param>
+    /// <param name="gridPos">网格坐标</param>
     /// <returns></returns>
     private Vector3 GetWorldPosition(Vector3Int gridPos)
     {
+        // 检查grid是否可用
+        if (grid == null)
+        {
+            Debug.LogError($"NPC {gameObject.name}: Grid为null，无法转换坐标");
+            return transform.position; // 返回当前位置作为备用
+        }
+        
         Vector3 worldPos = grid.CellToWorld(gridPos);
         return new Vector3(worldPos.x + Settings.gridCellSize / 2f, worldPos.y + Settings.gridCellSize / 2f);
     }
@@ -405,7 +468,7 @@ public class NPCMovement : MonoBehaviour,ISaveable
     }
     private IEnumerator SetStopAnimation()
     {
-        //ǿ������ͷ
+        //ǿͷ
         anim.SetFloat("DirX", 0);
         anim.SetFloat("DirY", -1);
         animationBreakTime = Settings.animationBreakTime;
@@ -422,7 +485,7 @@ public class NPCMovement : MonoBehaviour,ISaveable
             anim.SetBool("EventAnimation", false);
         }
     }
-    #region ����NPC��ʾ���
+    #region NPCʾ
     private void SetActiveInScene()
     {
         spriteRenderer.enabled = true;
